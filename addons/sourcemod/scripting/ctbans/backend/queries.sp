@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `ctbans_bans` (\
     `admin`     VARCHAR(64) NOT NULL,\
     `removedBy` VARCHAR(64) DEFAULT NULL NULL,\
     `removedAt` TIMESTAMP DEFAULT NULL NULL,\
-    `expired`   TINYINT(1) DEFAULT NULL NULL,\
+    `expired`   TINYINT(1) DEFAULT 0 NOT NULL,\
     `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP() NOT NULL,\
     `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP() NOT NULL ON UPDATE CURRENT_TIMESTAMP(),\
     PRIMARY KEY (`id`, `name`, `steamId`, `admin`, `ipAddress`),\
@@ -24,9 +24,9 @@ CREATE TABLE IF NOT EXISTS `ctbans_bans` (\
 "
 
 // Gets a client's ban.
-#define GET_BAN  "\
+#define GET_BAN "\
 SELECT `ctbans_bans`.`id`, `ctbans_bans`.`steamId`, `ctbans_bans`.`ipAddress`, `ctbans_bans`.`duration`,\
-    `ctbans_bans`.`timeLeft`, `ctbans_bans`.`reason`, `ctbans_bans`.`removedBy`, UNIX_TIMESTAMP(`ctbans_bans`.`removedAt`) AS `removedAt`,\
+    `ctbans_bans`.`timeLeft`, `ctbans_bans`.`reason`, `ctbans_bans`.`admin`, `ctbans_bans`.`removedBy`, UNIX_TIMESTAMP(`ctbans_bans`.`removedAt`) AS `removedAt`,\
     `ctbans_bans`.`expired`, UNIX_TIMESTAMP(`ctbans_bans`.`createdAt`) AS `createdAt`\
 FROM `ctbans_bans`\
     WHERE `ctbans_bans`.`steamId` = '%s' LIMIT 1;\
@@ -39,10 +39,10 @@ INSERT INTO `ctbans_bans` (`name`, `steamId`, `ipAddress`, `duration`, `timeLeft
 
 // Updates a client's ban.
 #define UPDATE_BAN "\
-UPDATE `ctbans_bans` SET `ctbans_bans`.`timeLeft` = %i WHERE `ctbans_bans`.`id` = %i AND `ctbans_bans`.`removedAt` IS NOT NULL LIMIT 1;\
+UPDATE `ctbans_bans` SET `ctbans_bans`.`timeLeft` = %i, `ctbans_bans`.`expired` = %i WHERE `ctbans_bans`.`steamId` = '%s' AND `ctbans_bans`.`removedAt` IS NULL LIMIT 1;\
 "
 
 // Updates a client's ban.
 #define UPDATE_BAN_REMOVED "\
-UPDATE `ctbans_bans` SET `ctbans_bans`.`removedBy` = '%s', `ctbans_bans`.`removedAt` = %i WHERE `ctbans_bans`.`id` = %i AND `ctbans_bans`.`removedAt` IS NOT NULL LIMIT 1;\
+UPDATE `ctbans_bans` SET `ctbans_bans`.`removedBy` = '%s', `ctbans_bans`.`removedAt` = FROM_UNIXTIME(%i) WHERE `ctbans_bans`.`steamId` = '%s' AND `ctbans_bans`.`removedAt` IS NULL LIMIT 1;\
 "

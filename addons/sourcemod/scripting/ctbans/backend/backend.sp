@@ -41,7 +41,7 @@ public void Backend_Connnection(Database database, const char[] error, any data)
         GetClientAuthId(i, AuthId_Steam2, steamId, sizeof(steamId));
 
         // Load the client's ban.
-        // TODO: Use a transaction per 5-10 Backend_GetAdmin queries.
+        // TODO: Use a transaction per 5-10 Backend_GetBan queries.
         Backend_GetBan(i, steamId);
     }
 }

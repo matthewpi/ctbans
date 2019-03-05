@@ -111,6 +111,8 @@ static void Callback_GetBan(Database database, DBResultSet results, const char[]
             continue;
         }
 
+        // TODO: Check if the client is connected and is on the CT team, then swap them to T.  (Bans might take time to load and the player might have enough time to select a team)
+
         // Log that we found an admin.
         LogMessage("%s Found ban for '%N' (Steam ID: '%s')", CONSOLE_PREFIX, client, steamId);
 
@@ -183,7 +185,7 @@ public void Backend_UpdateBan(const int client) {
 
     // Create and format the query.
     char query[1024];
-    Format(query, sizeof(query), UPDATE_BAN, ban.GetTimeLeft(), ban.GetID());
+    Format(query, sizeof(query), UPDATE_BAN, ban.GetTimeLeft(), ban.IsExpired() ? 1 : 0, ban.GetID());
 
     // Execute the query.
     g_dbCTBans.Query(Callback_UpdateBan, query, client);
@@ -200,7 +202,11 @@ static void Callback_UpdateBan(Database database, DBResultSet results, const cha
         return;
     }
 
-    LogMessage("%s Updated CT Ban for '%N'", CONSOLE_PREFIX, client);
+    if(IsClientConnected(client)) {
+        LogMessage("%s Updated CT Ban for '%N'", CONSOLE_PREFIX, client);
+    } else {
+        LogMessage("%s Updated CT Ban for %i", CONSOLE_PREFIX, client);
+    }
 }
 
 /**
@@ -217,9 +223,13 @@ public void Backend_UpdateBanRemoved(const int client) {
     char removedBy[64];
     ban.GetRemovedBy(removedBy, sizeof(removedBy));
 
+    // Get the ban's steam id.
+    char steamId[64];
+    ban.GetSteamID(steamId, sizeof(steamId));
+
     // Create and format the query.
     char query[1024];
-    Format(query, sizeof(query), UPDATE_BAN_REMOVED, removedBy, ban.GetRemovedAt(), ban.GetID());
+    Format(query, sizeof(query), UPDATE_BAN_REMOVED, removedBy, ban.GetRemovedAt(), steamId);
 
     // Execute the query.
     g_dbCTBans.Query(Callback_UpdateBanRemoved, query, client);

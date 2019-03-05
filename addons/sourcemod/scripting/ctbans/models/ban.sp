@@ -141,14 +141,30 @@ methodmap Ban < StringMap {
     // END createdAt
 
     public bool IsActive() {
+        // Check if the ban is indefinite.
+        if(this.GetDuration() == 0) {
+            if(this.GetRemovedAt() != -1) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        // Check if the ban has expired.
         if(this.IsExpired()) {
-            return true;
+            return false;
         }
 
+        // Check if removedAt is not equal to -1
         if(this.GetRemovedAt() != -1) {
-            return true;
+            return false;
         }
 
-        return false;
+        // Check if the ban is expired.
+        if(this.GetTimeLeft() < 1) {
+            return false;
+        }
+
+        return true;
     }
 }

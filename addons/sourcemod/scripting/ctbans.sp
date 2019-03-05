@@ -5,6 +5,7 @@
 
 #include <cstrike>
 #include <ctbans>
+#include <sdktools>
 #include <sourcemod>
 
 #pragma semicolon 1
@@ -48,7 +49,14 @@ Ban g_hBans[MAXPLAYERS + 1];
 #include "ctbans/backend/ban.sp"
 #include "ctbans/backend/backend.sp"
 
+// Commands
+#include "ctbans/commands/ctban.sp"
+#include "ctbans/commands/isbanned.sp"
+#include "ctbans/commands/unctban.sp"
+
 // Events
+//#include "ctbans/events/jointeam_failed.sp"
+#include "ctbans/events/player_spawn.sp"
 #include "ctbans/events/player_team.sp"
 // END Project Files
 
@@ -83,9 +91,28 @@ public void OnPluginStart() {
     // Attempt connection to the database.
     Database.Connect(Backend_Connnection, databaseName);
 
+    // Commands
+    // ctbans/commands/ctban.sp
+    RegAdminCmd("sm_ctban", Command_CTBan, ADMFLAG_BAN, "Bans a player from the Counter-Terrorist team.");
+    // ctbans/commands/ctban.sp
+    RegAdminCmd("sm_unctban", Command_UnCTBan, ADMFLAG_BAN, "Revokes a CT Ban from a client.");
+    // ctbans/commands/isbanned.sp
+    RegConsoleCmd("sm_isbanned", Command_IsBanned, "Check a player's CT Ban information.");
+    // END Commands
+
     // Events
+    // ctbans/events/jointeam_failed.sp
+    /*if(!HookEventEx("jointeam_failed", Event_JoinTeamFailed, EventHookMode_Pre)) {
+        SetFailState("%s Failed to hook \"jointeam_failed\" event, disabling plugin..", CONSOLE_PREFIX);
+        return;
+    }*/
+    // ctbans/events/player_spawn.sp
+    if(!HookEventEx("player_spawn", Event_PlayerSpawn)) {
+        SetFailState("%s Failed to hook \"player_spawn\" event, disabling plugin..", CONSOLE_PREFIX);
+        return;
+    }
     // ctbans/events/player_team.sp
-    if(!HookEventEx("player_team", Event_PlayerTeamPre, EventHookMode_Pre)) {
+    if(!HookEventEx("player_team", Event_PlayerTeam)) {
         SetFailState("%s Failed to hook \"player_team\" event, disabling plugin..", CONSOLE_PREFIX);
         return;
     }
@@ -93,6 +120,22 @@ public void OnPluginStart() {
 
     // Create the ban reduce timer.
     CreateTimer(60.0, Timer_BanReduce, _, TIMER_REPEAT);
+}
+
+/**
+ * OnPluginEnd
+ * ?
+ */
+public void OnPluginEnd() {
+    // Loop through all online clients.
+    for(int i = 1; i <= MaxClients; i++) {
+        // Check if the client is invalid.
+        if(!IsClientValid(i)) {
+            continue;
+        }
+
+        Backend_UpdateBan(i);
+    }
 }
 
 /**

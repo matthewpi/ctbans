@@ -4,17 +4,17 @@
  */
 
 /**
- * Command_CTBan (sm_ctban)
- * Issues a ct ban to a client.
+ * Command_UnCTBan (sm_unctban)
+ * Revokes a CT Ban from a client.
  */
-public Action Command_CTBan(const int client, const int args) {
+public Action Command_UnCTBan(const int client, const int args) {
     // Variable to hold the command name.
-    char command[64] = "sm_ctban";
+    char command[64] = "sm_unctban";
 
     // Check if the client did not pass proper arguments.
-    if(args < 3) {
+    if(args != 1) {
         // Send a message to the client.
-        ReplyToCommand(client, "%s \x07Usage: \x01%s <#userid;target> <duration> <reason>", PREFIX, command);
+        ReplyToCommand(client, "%s \x07Usage: \x01%s <#userid;target>", PREFIX, command);
 
         // Log the command execution.
         LogCommand(client, -1, command, "");
@@ -53,32 +53,6 @@ public Action Command_CTBan(const int client, const int args) {
         return Plugin_Handled;
     }
 
-    // Get the second command argument.
-    char durationString[64];
-    GetCmdArg(2, durationString, sizeof(durationString));
-
-    int duration = StringToInt(durationString);
-
-    // Check if duration is not a valid integer.
-    if(!StrEqual(durationString, "0") && duration == 0) {
-        // Send a message to the client.
-        ReplyToCommand(client, "%s \x10%s\x01 is not a valid ban duration.", CONSOLE_PREFIX, durationString);
-
-        // Log the command execution.
-        LogCommand(client, -1, command, "(Invalid duration)");
-        return Plugin_Handled;
-    }
-
-    char reason[128] = "";
-    for(int i = 3; i <= args; i++) {
-        char buffer[64];
-        GetCmdArg(i, buffer, sizeof(buffer));
-        if(i != 3) {
-            Format(buffer, sizeof(buffer), " %s", buffer);
-        }
-        StrCat(reason, sizeof(reason), buffer);
-    }
-
     int target = targets[0];
 
     // Check if the target is invalid.
@@ -92,17 +66,17 @@ public Action Command_CTBan(const int client, const int args) {
     }
 
     // Check if the target already has a ban.
-    if(g_hBans[target] != null) {
+    if(g_hBans[target] == null) {
         // Send a message to the client.
-        ReplyToCommand(client, "%s \x10%s\x01 already has an active \x07CT Ban\x01.", CONSOLE_PREFIX, targetName);
+        ReplyToCommand(client, "%s \x10%s\x01 does not have a \x07CT Ban\x01.", CONSOLE_PREFIX, targetName);
 
         // Log the command execution.
-        LogCommand(client, -1, command, "(Target already has a ban)");
+        LogCommand(client, -1, command, "(Target does not have a ban)");
         return Plugin_Handled;
     }
 
     // Add the ct ban to the target.
-    CTBans_AddBan(target, client, duration, reason);
+    CTBans_RemoveBan(target, client);
 
     // Log the command execution.
     LogCommand(client, target, command, "(Target: '%s')", targetName);

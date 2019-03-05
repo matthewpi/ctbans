@@ -71,3 +71,19 @@ public void Colorize(char[] message, const int maxlen) {
         ReplaceString(message, maxlen, _colorNames[i], _colorCodes[i]);
     }
 }
+
+/**
+ * DisarmClient
+ * Removes a player's weapons.
+ */
+public void DisarmClient(const int client) {
+    for(int i = 0; i < 5; i++) {
+        int weapon = GetPlayerWeaponSlot(client, i);
+
+        while(weapon > 0) {
+            RemovePlayerItem(client, weapon);
+            AcceptEntityInput(weapon, "Kill");
+            weapon = GetPlayerWeaponSlot(client, i);
+        }
+    }
+}

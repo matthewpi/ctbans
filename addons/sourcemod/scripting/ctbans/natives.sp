@@ -56,24 +56,35 @@ public int Native_AddBan(Handle plugin, int params) {
     ban.SetTimeLeft(duration);
     ban.SetReason(reason);
     ban.SetAdmin(adminSteamId);
+    ban.SetRemovedAt(-1);
+    ban.SetExpired(false);
     ban.SetCreatedAt(GetTime());
 
     // Add the ban to the "g_hBans" array.
     g_hBans[client] = ban;
 
-
     // Check if the ban's duration is indefinite
     if(duration == 0) {
         // Log the ban activity.
-        LogActivity(admin, "\x01Banned \x10%N\x01 indefinitely. (Reason: \"%s\")", client, reason);
+        LogActivity(admin, "\x01Banned \x10%N\x01 indefinitely. (Reason: \"\x07%s\x01\")", client, reason);
     } else {
         // Log the ban activity.
-        LogActivity(admin, "\x01Banned \x10%N\x01 for \x07%i\x01 minutes. (Reason: \"%s\")", client, duration, reason);
+        LogActivity(admin, "\x01Banned \x10%N\x01 for \x07%i\x01 minutes. (Reason: \"\x07%s\x01\")", client, duration, reason);
     }
 
     // Switch the client to the terrorist team.
     if(GetClientTeam(client) == CS_TEAM_CT) {
-        ChangeClientTeam(client, CS_TEAM_T);
+        // Check if the client is alive.
+        if(IsPlayerAlive(client)) {
+            // Disarm the client.
+            DisarmClient(client);
+
+            // Kill the client.
+            ForcePlayerSuicide(client);
+        }
+
+        // Switch the client's team.
+        CS_SwitchTeam(client, CS_TEAM_T);
     }
 
     // Insert the ban into the database.
@@ -90,11 +101,13 @@ public int Native_RemoveBan(Handle plugin, int params) {
 
     Ban ban = g_hBans[client];
     if(ban == null) {
+        LogMessage("%s Ban is null.", CONSOLE_PREFIX);
         return;
     }
 
     // Check if the ban is inactive.
     if(!ban.IsActive()) {
+        LogMessage("%s Ban is inactive.", CONSOLE_PREFIX);
         return;
     }
 
@@ -113,6 +126,9 @@ public int Native_RemoveBan(Handle plugin, int params) {
 
     // Update the database.
     Backend_UpdateBanRemoved(client);
+
+    // Log the un activity.
+    LogActivity(admin, "\x01Removed a \x07CT Ban\x01 from \x10%N\x01.", client);
 
     // Unallocate the ban's memory.
     delete g_hBans[client];
