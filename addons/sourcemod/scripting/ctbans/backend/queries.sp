@@ -39,10 +39,10 @@ INSERT INTO `ctbans_bans` (`name`, `steamId`, `ipAddress`, `duration`, `timeLeft
 
 // Updates a client's ban.
 #define UPDATE_BAN "\
-UPDATE `ctbans_bans` SET `ctbans_bans`.`timeLeft` = %i, `ctbans_bans`.`expired` = %i WHERE `ctbans_bans`.`steamId` = '%s' AND `ctbans_bans`.`removedAt` IS NULL LIMIT 1;\
+UPDATE `ctbans_bans` SET `ctbans_bans`.`timeLeft` = %i, `ctbans_bans`.`expired` = %i WHERE `ctbans_bans`.`steamId` = '%s' AND `ctbans_bans`.`removedAt` IS NULL AND `ctbans_bans`.`expired` = 0 LIMIT 1;\
 "
 
 // Updates a client's ban.
 #define UPDATE_BAN_REMOVED "\
-UPDATE `ctbans_bans` SET `ctbans_bans`.`removedBy` = '%s', `ctbans_bans`.`removedAt` = FROM_UNIXTIME(%i) WHERE `ctbans_bans`.`steamId` = '%s' AND `ctbans_bans`.`removedAt` IS NULL LIMIT 1;\
+UPDATE `ctbans_bans` SET `ctbans_bans`.`removedBy` = '%s', `ctbans_bans`.`removedAt` = FROM_UNIXTIME(%i) WHERE `ctbans_bans`.`steamId` = '%s' AND `ctbans_bans`.`removedAt` IS NULL AND `ctbans_bans`.`expired` = 0 LIMIT 1;\
 "

@@ -160,6 +160,39 @@ public void Backend_InsertBan(const int client) {
 }
 
 /**
+ * Backend_InsertBan
+ * Updates a ban.
+ */
+public void Backend_InsertBanObject(Ban ban) {
+    // Get client's name.
+    char clientName[128];
+    ban.GetName(clientName, sizeof(clientName));
+
+    // Get the client's steam id.
+    char clientSteamId[64];
+    ban.GetSteamID(clientSteamId, sizeof(clientSteamId));
+
+    // Get the client's ip address.
+    char clientIpAddress[16];
+    ban.GetIpAddress(clientIpAddress, sizeof(clientIpAddress));
+
+    // Get the admin's steam id.
+    char reason[128];
+    ban.GetReason(reason, sizeof(reason));
+
+    // Get the admin's steam id.
+    char adminSteamId[64];
+    ban.GetAdmin(adminSteamId, sizeof(adminSteamId));
+
+    // Create and format the query.
+    char query[1024];
+    Format(query, sizeof(query), INSERT_BAN, clientName, clientSteamId, clientIpAddress, ban.GetDuration(), ban.GetTimeLeft(), reason, adminSteamId);
+
+    // Execute the query.
+    g_dbCTBans.Query(Callback_InsertBan, query, 0);
+}
+
+/**
  * Callback_InsertBan
  * Backend callback for Backend_InsertBan(int)
  */
@@ -170,7 +203,10 @@ static void Callback_InsertBan(Database database, DBResultSet results, const cha
         return;
     }
 
-    LogMessage("%s Inserted CT Ban for '%N'", CONSOLE_PREFIX, client);
+    // Check if a valid client index was passed.
+    if(client != 0) {
+        LogMessage("%s Inserted CT Ban for '%N'", CONSOLE_PREFIX, client);
+    }
 }
 
 /**
@@ -183,9 +219,13 @@ public void Backend_UpdateBan(const int client) {
         return;
     }
 
+    // Get the client's steamId.
+    char steamId[64];
+    ban.GetSteamID(steamId, sizeof(steamId));
+
     // Create and format the query.
     char query[1024];
-    Format(query, sizeof(query), UPDATE_BAN, ban.GetTimeLeft(), ban.IsExpired() ? 1 : 0, ban.GetID());
+    Format(query, sizeof(query), UPDATE_BAN, ban.GetTimeLeft(), ban.IsExpired() ? 1 : 0, steamId);
 
     // Execute the query.
     g_dbCTBans.Query(Callback_UpdateBan, query, client);

@@ -11,6 +11,11 @@ public Action Command_IsBanned(const int client, const int args) {
     // Variable to hold the command name.
     char command[64] = "sm_isbanned";
 
+    if(args == 0 && client == 0) {
+        ReplyToCommand(client, "%s Because you are the console, you are indefinitely banned from CT.", PREFIX);
+        return Plugin_Handled;
+    }
+
     // Check if the client passed no arguments.
     if(args == 0) {
         Ban ban = g_hBans[client];

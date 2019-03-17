@@ -50,6 +50,7 @@ Ban g_hBans[MAXPLAYERS + 1];
 #include "ctbans/backend/backend.sp"
 
 // Commands
+#include "ctbans/commands/ctban_offline.sp"
 #include "ctbans/commands/ctban.sp"
 #include "ctbans/commands/isbanned.sp"
 #include "ctbans/commands/unctban.sp"
@@ -94,6 +95,8 @@ public void OnPluginStart() {
     // Commands
     // ctbans/commands/ctban.sp
     RegAdminCmd("sm_ctban", Command_CTBan, ADMFLAG_BAN, "Bans a player from the Counter-Terrorist team.");
+    // ctbans/commands/ctban.sp
+    RegAdminCmd("sm_ctban_offline", Command_CTBanOffline, ADMFLAG_BAN, "Bans a player from the Counter-Terrorist team.");
     // ctbans/commands/ctban.sp
     RegAdminCmd("sm_unctban", Command_UnCTBan, ADMFLAG_BAN, "Revokes a CT Ban from a client.");
     // ctbans/commands/isbanned.sp

@@ -62,7 +62,7 @@ public Action Command_CTBan(const int client, const int args) {
     // Check if duration is not a valid integer.
     if(!StrEqual(durationString, "0") && duration == 0) {
         // Send a message to the client.
-        ReplyToCommand(client, "%s \x10%s\x01 is not a valid ban duration.", CONSOLE_PREFIX, durationString);
+        ReplyToCommand(client, "%s \x10%s\x01 is not a valid ban duration.", PREFIX, durationString);
 
         // Log the command execution.
         LogCommand(client, -1, command, "(Invalid duration)");
