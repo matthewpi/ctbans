@@ -22,36 +22,20 @@ public Action Command_CTBan(const int client, const int args) {
     }
 
     // Get the first command argument.
-    char potentialTarget[64];
+    char potentialTarget[512];
     GetCmdArg(1, potentialTarget, sizeof(potentialTarget));
 
-    // Define variables to store target information.
-    char targetName[MAX_TARGET_LENGTH];
-    int targets[MAXPLAYERS + 1];
-    bool tnIsMl;
-
-    // Process the target string.
-    int targetCount = ProcessTargetString(potentialTarget, client, targets, MAXPLAYERS, COMMAND_FILTER_CONNECTED, targetName, sizeof(targetName), tnIsMl);
-
-    // Check if no clients were found.
-    if(targetCount < 1) {
-        // Send a message to the client.
-        ReplyToTargetError(client, targetCount);
-
+    // Attempt to get and target a player using the first command argument.
+    int target = FindTarget(client, potentialTarget, true, true);
+    if(target == -1) {
         // Log the command execution.
         LogCommand(client, -1, command, "(Targetting error)");
         return Plugin_Handled;
     }
 
-    // Check if more than one target was found.
-    if(targetCount > 2) {
-        // Send a message to the client.
-        ReplyToCommand(client, "%s Too many clients were matched.", PREFIX);
-
-        // Log the command execution.
-        LogCommand(client, -1, command, "(Too many clients found)");
-        return Plugin_Handled;
-    }
+    // Get the target's name.
+    char targetName[128];
+    GetClientName(target, targetName, sizeof(targetName));
 
     // Get the second command argument.
     char durationString[64];
@@ -78,8 +62,6 @@ public Action Command_CTBan(const int client, const int args) {
         }
         StrCat(reason, sizeof(reason), buffer);
     }
-
-    int target = targets[0];
 
     // Check if the target is invalid.
     if(!IsClientValid(target)) {
