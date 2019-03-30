@@ -36,6 +36,7 @@ static void Callback_GetBan(Database database, DBResultSet results, const char[]
     int idIndex;
     int steamIdIndex;
     int ipAddressIndex;
+    int countryIndex;
     int durationIndex;
     int timeLeftIndex;
     int reasonIndex;
@@ -48,6 +49,7 @@ static void Callback_GetBan(Database database, DBResultSet results, const char[]
     if(!results.FieldNameToNum("id", idIndex)) { LogError("%s Failed to locate \"id\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
     if(!results.FieldNameToNum("steamId", steamIdIndex)) { LogError("%s Failed to locate \"steamId\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
     if(!results.FieldNameToNum("ipAddress", ipAddressIndex)) { LogError("%s Failed to locate \"ipAddress\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
+    if(!results.FieldNameToNum("country", countryIndex)) { LogError("%s Failed to locate \"country\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
     if(!results.FieldNameToNum("duration", durationIndex)) { LogError("%s Failed to locate \"duration\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
     if(!results.FieldNameToNum("timeLeft", timeLeftIndex)) { LogError("%s Failed to locate \"timeLeft\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
     if(!results.FieldNameToNum("reason", reasonIndex)) { LogError("%s Failed to locate \"reason\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
@@ -64,6 +66,7 @@ static void Callback_GetBan(Database database, DBResultSet results, const char[]
         int id = results.FetchInt(idIndex);
         char steamId[64];
         char ipAddress[16];
+        char country[4];
         int duration = results.FetchInt(durationIndex);
         int timeLeft = results.FetchInt(timeLeftIndex);
         char reason[128];
@@ -87,6 +90,7 @@ static void Callback_GetBan(Database database, DBResultSet results, const char[]
 
         results.FetchString(steamIdIndex, steamId, sizeof(steamId));
         results.FetchString(ipAddressIndex, ipAddress, sizeof(ipAddress));
+        results.FetchString(countryIndex, country, sizeof(country));
         results.FetchString(reasonIndex, reason, sizeof(reason));
         results.FetchString(adminIndex, admin, sizeof(admin));
         // END Pull row information.
@@ -96,6 +100,7 @@ static void Callback_GetBan(Database database, DBResultSet results, const char[]
         ban.SetID(id);
         ban.SetSteamID(steamId);
         ban.SetIpAddress(ipAddress);
+        ban.SetCountry(country);
         ban.SetDuration(duration);
         ban.SetTimeLeft(timeLeft);
         ban.SetReason(reason);
@@ -143,6 +148,10 @@ public void Backend_InsertBan(const int client) {
     char clientIpAddress[16];
     ban.GetIpAddress(clientIpAddress, sizeof(clientIpAddress));
 
+    // Get the client's country.
+    char clientCountry[4];
+    ban.GetCountry(clientCountry, sizeof(clientCountry));
+
     // Get the admin's steam id.
     char reason[128];
     ban.GetReason(reason, sizeof(reason));
@@ -153,7 +162,7 @@ public void Backend_InsertBan(const int client) {
 
     // Create and format the query.
     char query[1024];
-    Format(query, sizeof(query), INSERT_BAN, clientName, clientSteamId, clientIpAddress, ban.GetDuration(), ban.GetTimeLeft(), reason, adminSteamId);
+    Format(query, sizeof(query), INSERT_BAN, clientName, clientSteamId, clientIpAddress, clientCountry, ban.GetDuration(), ban.GetTimeLeft(), reason, adminSteamId);
 
     // Execute the query.
     g_dbCTBans.Query(Callback_InsertBan, query, client);
@@ -176,6 +185,10 @@ public void Backend_InsertBanObject(Ban ban) {
     char clientIpAddress[16];
     ban.GetIpAddress(clientIpAddress, sizeof(clientIpAddress));
 
+    // Get the client's country.
+    char clientCountry[4];
+    ban.GetCountry(clientCountry, sizeof(clientCountry));
+
     // Get the admin's steam id.
     char reason[128];
     ban.GetReason(reason, sizeof(reason));
@@ -186,7 +199,7 @@ public void Backend_InsertBanObject(Ban ban) {
 
     // Create and format the query.
     char query[1024];
-    Format(query, sizeof(query), INSERT_BAN, clientName, clientSteamId, clientIpAddress, ban.GetDuration(), ban.GetTimeLeft(), reason, adminSteamId);
+    Format(query, sizeof(query), INSERT_BAN, clientName, clientSteamId, clientIpAddress, clientCountry, ban.GetDuration(), ban.GetTimeLeft(), reason, adminSteamId);
 
     // Execute the query.
     g_dbCTBans.Query(Callback_InsertBan, query, 0);
@@ -269,7 +282,7 @@ public void Backend_UpdateBanRemoved(const int client) {
 
     // Create and format the query.
     char query[1024];
-    Format(query, sizeof(query), UPDATE_BAN_REMOVED, removedBy, ban.GetRemovedAt(), steamId);
+    Format(query, sizeof(query), UPDATE_BAN_REMOVED, removedBy, ban.GetRemovedAt(), ban.IsExpired() ? 1 : 0, steamId);
 
     // Execute the query.
     g_dbCTBans.Query(Callback_UpdateBanRemoved, query, client);

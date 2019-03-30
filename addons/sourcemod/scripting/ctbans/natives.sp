@@ -43,15 +43,24 @@ public int Native_AddBan(Handle plugin, int params) {
     char clientIpAddress[16];
     GetClientIP(client, clientIpAddress, sizeof(clientIpAddress));
 
+    // Get the client's country.
+    char clientCountry[4];
+    GeoipCode2(clientIpAddress, clientCountry);
+
     // Get the admin's steam id.
     char adminSteamId[64];
-    GetClientAuthId(admin, AuthId_Steam2, adminSteamId, sizeof(adminSteamId));
+    if(client == 0) {
+        adminSteamId = "STEAM_ID_SERVER";
+    } else {
+        GetClientAuthId(admin, AuthId_Steam2, adminSteamId, sizeof(adminSteamId));
+    }
 
     // Create a new ban object and set the needed values.
     Ban ban = new Ban();
     ban.SetName(clientName);
     ban.SetSteamID(clientSteamId);
     ban.SetIpAddress(clientIpAddress);
+    ban.SetCountry(clientCountry);
     ban.SetDuration(duration);
     ban.SetTimeLeft(duration);
     ban.SetReason(reason);
@@ -113,7 +122,11 @@ public int Native_RemoveBan(Handle plugin, int params) {
 
     // Get the admin's steam id.
     char adminSteamId[64];
-    GetClientAuthId(admin, AuthId_Steam2, adminSteamId, sizeof(adminSteamId));
+    if(client == 0) {
+        adminSteamId = "STEAM_ID_SERVER";
+    } else {
+        GetClientAuthId(admin, AuthId_Steam2, adminSteamId, sizeof(adminSteamId));
+    }
 
     // Update the ban's removedBy steam id.
     ban.SetRemovedBy(adminSteamId);

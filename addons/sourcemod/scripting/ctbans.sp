@@ -5,6 +5,7 @@
 
 #include <cstrike>
 #include <ctbans>
+#include <geoip>
 #include <sdktools>
 #include <sourcemod>
 

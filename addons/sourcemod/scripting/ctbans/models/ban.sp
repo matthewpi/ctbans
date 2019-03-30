@@ -50,6 +50,16 @@ methodmap Ban < StringMap {
     }
     // END ipAddress
 
+    // country
+    public void GetCountry(char[] buffer, int maxlen) {
+        this.GetString("country", buffer, maxlen);
+    }
+
+    public void SetCountry(const char[] country) {
+        this.SetString("country", country);
+    }
+    // END country
+
     // duration
     public int GetDuration() {
         int duration;

@@ -63,13 +63,18 @@ public Action Command_CTBanOffline(const int client, const int args) {
 
     // Get the admin's steam id.
     char adminSteamId[64];
-    GetClientAuthId(client, AuthId_Steam2, adminSteamId, sizeof(adminSteamId));
+    if(client == 0) {
+        adminSteamId = "STEAM_ID_SERVER";
+    } else {
+        GetClientAuthId(client, AuthId_Steam2, adminSteamId, sizeof(adminSteamId));
+    }
 
     // Create a new ban object and set the needed values.
     Ban ban = new Ban();
     ban.SetName("");
     ban.SetSteamID(steamId);
     ban.SetIpAddress("");
+    ban.SetCountry("");
     ban.SetDuration(duration);
     ban.SetTimeLeft(duration);
     ban.SetReason(reason);
