@@ -28,10 +28,10 @@ CREATE TABLE IF NOT EXISTS `ctbans_bans` (\
 
 // Gets a client's ban.
 #define GET_BAN "\
-SELECT `ctbans_bans`.`id`, `ctbans_bans`.`steamId`, `ctbans_bans`.`ipAddress`, `ctbans_bans`.`country`, `ctbans_bans`.`duration`,\
-    `ctbans_bans`.`timeLeft`, `ctbans_bans`.`reason`, `ctbans_bans`.`admin`, `ctbans_bans`.`removedBy`, UNIX_TIMESTAMP(`ctbans_bans`.`removedAt`) AS `removedAt`,\
-    `ctbans_bans`.`expired`, UNIX_TIMESTAMP(`ctbans_bans`.`createdAt`) AS `createdAt`\
-FROM `ctbans_bans`\
+SELECT `ctbans_bans`.`id`, `ctbans_bans`.`steamId`, `ctbans_bans`.`ipAddress`, `ctbans_bans`.`country`, `ctbans_bans`.`duration`, \
+    `ctbans_bans`.`timeLeft`, `ctbans_bans`.`reason`, `ctbans_bans`.`admin`, `ctbans_bans`.`removedBy`, UNIX_TIMESTAMP(`ctbans_bans`.`removedAt`) AS `removedAt`, \
+    `ctbans_bans`.`expired`, UNIX_TIMESTAMP(`ctbans_bans`.`createdAt`) AS `createdAt` \
+FROM `ctbans_bans` \
     WHERE `ctbans_bans`.`steamId` = '%s' LIMIT 1;\
 "
 
