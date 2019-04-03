@@ -81,17 +81,10 @@ public void OnPluginStart() {
     LoadTranslations("common.phrases");
 
     // Create custom convars for the plugin.
-    g_cvDatabase = CreateConVar("sm_ctbans_database", "ctbans", "Sets what database the plugin should use.");
+    g_cvDatabase = CreateConVar("sm_ctbans_database", "ctbans", "Sets what database the plugin should use.", FCVAR_PROTECTED);
 
     // Generate and load our plugin convar config.
     AutoExecConfig(true, "ctbans");
-
-    // Get the database name from the g_cvDatabase convar.
-    char databaseName[64];
-    g_cvDatabase.GetString(databaseName, sizeof(databaseName));
-
-    // Attempt connection to the database.
-    Database.Connect(Backend_Connnection, databaseName);
 
     // Commands
     // ctbans/commands/ctban.sp
@@ -124,6 +117,19 @@ public void OnPluginStart() {
 
     // Create the ban reduce timer.
     CreateTimer(60.0, Timer_BanReduce, _, TIMER_REPEAT);
+}
+
+/**
+ * OnConfigsExecuted
+ * Connects to the database using the configured convar.
+ */
+public void OnConfigsExecuted() {
+    // Get the database name from the g_cvDatabase convar.
+    char databaseName[64];
+    g_cvDatabase.GetString(databaseName, sizeof(databaseName));
+
+    // Attempt connection to the database.
+    Database.Connect(Backend_Connnection, databaseName);
 }
 
 /**
