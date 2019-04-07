@@ -28,6 +28,7 @@
 
 // Project Models
 #include "ctbans/models/ban.sp"
+#include "ctbans/models/player.sp"
 // END Project Models
 
 // Globals
@@ -39,6 +40,15 @@ Database g_dbCTBans;
 
 // g_hBans stores an array of Bans.
 Ban g_hBans[MAXPLAYERS + 1];
+
+// g_alDisconnected stores a list of recently disconnected clients.
+ArrayList g_alDisconnected;
+
+// g_iMenuSelection stores an array of active menu selections.
+int g_iMenuSelection[MAXPLAYERS + 1];
+
+// g_hBanObject stores an array of processing bans.
+Ban g_hBanObject[MAXPLAYERS + 1];
 // END Globals
 
 // Project Files
@@ -51,15 +61,19 @@ Ban g_hBans[MAXPLAYERS + 1];
 #include "ctbans/backend/backend.sp"
 
 // Commands
-#include "ctbans/commands/ctban_offline.sp"
 #include "ctbans/commands/ctban.sp"
+#include "ctbans/commands/ctban_offline.sp"
 #include "ctbans/commands/isbanned.sp"
 #include "ctbans/commands/unctban.sp"
 
 // Events
 //#include "ctbans/events/jointeam_failed.sp"
+#include "ctbans/events/player_chat.sp"
 #include "ctbans/events/player_spawn.sp"
 #include "ctbans/events/player_team.sp"
+
+// Menus
+#include "ctbans/menus/rage.sp"
 // END Project Files
 
 // Plugin Information
@@ -89,8 +103,8 @@ public void OnPluginStart() {
     // Commands
     // ctbans/commands/ctban.sp
     RegAdminCmd("sm_ctban", Command_CTBan, ADMFLAG_BAN, "Bans a player from the Counter-Terrorist team.");
-    // ctbans/commands/ctban.sp
-    RegAdminCmd("sm_ctban_offline", Command_CTBanOffline, ADMFLAG_BAN, "Bans a player from the Counter-Terrorist team.");
+    // ctbans/commands/ctban_offline.sp
+    RegAdminCmd("sm_ctban_offline", Command_CTBanOffline, ADMFLAG_BAN, "Bans an offline player from the Counter-Terrorist team.");
     // ctbans/commands/ctban.sp
     RegAdminCmd("sm_unctban", Command_UnCTBan, ADMFLAG_BAN, "Revokes a CT Ban from a client.");
     // ctbans/commands/isbanned.sp
@@ -114,6 +128,9 @@ public void OnPluginStart() {
         return;
     }
     // END Events
+
+    // Initialize the arraylist.
+    g_alDisconnected = CreateArray();
 
     // Create the ban reduce timer.
     CreateTimer(60.0, Timer_BanReduce, _, TIMER_REPEAT);
@@ -159,6 +176,8 @@ public void OnClientAuthorized(int client, const char[] auth) {
     }
 
     g_hBans[client] = null;
+    g_iMenuSelection[client] = -1;
+    g_hBanObject[client] = null;
 
     // Attempt to load user's ban information.
     Backend_GetBan(client, auth);
@@ -169,10 +188,42 @@ public void OnClientAuthorized(int client, const char[] auth) {
  * Prints a disconnect chat message.
  */
 public void OnClientDisconnect(int client) {
-    // Check if user has a ban.
-    if(g_hBans[client] == null) {
+    // Get the client's steam id.
+    char auth[64];
+    GetClientAuthId(client, AuthId_Steam2, auth, sizeof(auth));
+
+    // Ignore bot users.
+    if(StrEqual(auth, "BOT", true)) {
         return;
     }
+
+    char buffer[64];
+    for(int i = 0; i < g_alDisconnected.Length-1; i++) {
+        Player player = g_alDisconnected.Get(i);
+        if(player == null) {
+            continue;
+        }
+
+        player.GetSteamID(buffer, sizeof(buffer));
+
+        if(StrEqual(buffer, auth, true)) {
+            g_alDisconnected.Erase(i);
+            break;
+        }
+    }
+
+    Player player = new Player();
+    player.SetSteamID(auth);
+
+    char name[128];
+    GetClientName(client, name, sizeof(name));
+    player.SetName(name);
+
+    char ipAddress[32];
+    GetClientIP(client, ipAddress, sizeof(ipAddress));
+    player.SetIpAddress(ipAddress);
+
+    g_alDisconnected.Push(player);
 
     // Save the users's ban information.
     Backend_UpdateBan(client);

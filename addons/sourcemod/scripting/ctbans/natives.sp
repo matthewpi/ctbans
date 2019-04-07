@@ -49,7 +49,7 @@ public int Native_AddBan(Handle plugin, int params) {
 
     // Get the admin's steam id.
     char adminSteamId[64];
-    if(client == 0) {
+    if(admin == 0) {
         adminSteamId = "STEAM_ID_SERVER";
     } else {
         GetClientAuthId(admin, AuthId_Steam2, adminSteamId, sizeof(adminSteamId));

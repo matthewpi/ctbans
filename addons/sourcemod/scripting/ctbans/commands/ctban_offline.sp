@@ -13,8 +13,7 @@ public Action Command_CTBanOffline(const int client, const int args) {
 
     // Check if there are no arguments passed.
     if(args == 0) {
-        // Send a message to the client.
-        ReplyToCommand(client, "%s Rage Ban menu is not implemented yet. :/", PREFIX);
+        CTBans_RageMenu(client);
 
         // Log the command execution.
         LogCommand(client, -1, command, "");

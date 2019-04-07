@@ -1,10 +1,10 @@
-#if defined _overlord_included
+#if defined _ctbans_included
     #endinput
 #endif
-#define _overlord_included
+#define _ctbans_included
 
 public SharedPlugin __pl_ctbans = {
-    name = "CT Bans",
+    name = "ctbans",
     file = "ctbans.smx",
     #if defined REQUIRE_PLUGIN
     required = 1,
@@ -24,3 +24,10 @@ native void CTBans_AddBan(const int client, const int admin, const int duration,
  * Removes a CT Ban from the specified player.
  */
 native void CTBans_RemoveBan(const int client, const int admin);
+
+#if !defined REQUIRE_PLUGIN
+public __pl_ctbans_SetNTVOptional() {
+	MarkNativeAsOptional("CTBans_AddBan");
+	MarkNativeAsOptional("CTBans_RemoveBan");
+}
+#endif
