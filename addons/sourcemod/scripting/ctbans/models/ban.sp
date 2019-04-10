@@ -153,25 +153,31 @@ methodmap Ban < StringMap {
     public bool IsActive() {
         // Check if the ban is indefinite.
         if(this.GetDuration() == 0) {
+            LogMessage("%s Ban#IsActive: Ban is permanent.", CONSOLE_PREFIX);
             if(this.GetRemovedAt() != -1) {
+                LogMessage("%s Ban#IsActive: Ban is removed.", CONSOLE_PREFIX);
                 return false;
             } else {
+                LogMessage("%s Ban#IsActive: Ban is active.", CONSOLE_PREFIX);
                 return true;
             }
         }
 
         // Check if the ban has expired.
         if(this.IsExpired()) {
+            LogMessage("%s Ban#IsActive: Ban is expired.", CONSOLE_PREFIX);
             return false;
         }
 
         // Check if removedAt is not equal to -1
         if(this.GetRemovedAt() != -1) {
+            LogMessage("%s Ban#IsActive: Ban is removed.", CONSOLE_PREFIX);
             return false;
         }
 
         // Check if the ban is expired.
         if(this.GetTimeLeft() < 1) {
+            LogMessage("%s Ban#IsActive: Ban is expired.", CONSOLE_PREFIX);
             return false;
         }
 

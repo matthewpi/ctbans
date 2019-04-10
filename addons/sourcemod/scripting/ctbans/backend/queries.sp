@@ -19,8 +19,8 @@ CREATE TABLE IF NOT EXISTS `ctbans_bans` (\
     `removedAt` TIMESTAMP DEFAULT NULL NULL,\
     `expired`   TINYINT(1) DEFAULT 0 NOT NULL,\
     `inGame`    TINYINT(1) DEFAULT 1 NOT NULL,\
-    `createdAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP() NOT NULL,\
-    `updatedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP() NOT NULL ON UPDATE CURRENT_TIMESTAMP(),\
+    `createdAt` TIMESTAMP NOT NULL,\
+    `updatedAt` TIMESTAMP NOT NULL,\
     PRIMARY KEY (`id`, `name`, `steamId`, `ipAddress`, `admin`),\
     CONSTRAINT `ctbans_bans_id_uindex` UNIQUE (`id`)\
 ) ENGINE=InnoDB DEFAULT CHARSET 'utf8';\
@@ -32,12 +32,12 @@ SELECT `ctbans_bans`.`id`, `ctbans_bans`.`steamId`, `ctbans_bans`.`ipAddress`, `
     `ctbans_bans`.`timeLeft`, `ctbans_bans`.`reason`, `ctbans_bans`.`admin`, `ctbans_bans`.`removedBy`, UNIX_TIMESTAMP(`ctbans_bans`.`removedAt`) AS `removedAt`, \
     `ctbans_bans`.`expired`, UNIX_TIMESTAMP(`ctbans_bans`.`createdAt`) AS `createdAt` \
 FROM `ctbans_bans` \
-    WHERE `ctbans_bans`.`steamId` = '%s' LIMIT 1;\
+    WHERE `ctbans_bans`.`steamId` = '%s' AND `ctbans_bans`.`removedAt` IS NULL AND `ctbans_bans`.`expired` = 0 LIMIT 1;\
 "
 
 // Inserts a new ban.
 #define INSERT_BAN "\
-INSERT INTO `ctbans_bans` (`name`, `steamId`, `ipAddress`, `country`, `duration`, `timeLeft`, `reason`, `admin`) VALUES ('%s', '%s', '%s', '%s', %i, %i, '%s', '%s');\
+INSERT INTO `ctbans_bans` (`name`, `steamId`, `ipAddress`, `country`, `duration`, `timeLeft`, `reason`, `admin`, `removedAt`, `createdAt`, `updatedAt`) VALUES ('%s', '%s', '%s', '%s', %i, %i, '%s', '%s', NULL, FROM_UNIXTIME(%i), FROM_UNIXTIME(%i));\
 "
 
 // Updates a client's ban.

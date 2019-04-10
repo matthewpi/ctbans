@@ -27,11 +27,6 @@ static void Callback_GetBan(Database database, DBResultSet results, const char[]
         return;
     }
 
-    // Ignore empty result set.
-    if(results.RowCount == 0) {
-        return;
-    }
-
     // Get table column indexes.
     int idIndex;
     int steamIdIndex;
@@ -78,6 +73,7 @@ static void Callback_GetBan(Database database, DBResultSet results, const char[]
 
         if(!results.IsFieldNull(removedAtIndex)) {
             removedAt = results.FetchInt(removedAtIndex);
+            LogMessage("%s Removed At is not null. (%i)", CONSOLE_PREFIX, removedAt);
         }
 
         if(!results.IsFieldNull(removedByIndex)) {
@@ -112,6 +108,8 @@ static void Callback_GetBan(Database database, DBResultSet results, const char[]
 
         // Check if the ban is active.
         if(!ban.IsActive()) {
+            // Log that we found an admin.
+            LogMessage("%s Found ban for '%N' but it is inactive (Steam ID: '%s')", CONSOLE_PREFIX, client, steamId);
             delete ban;
             continue;
         }
@@ -160,9 +158,11 @@ public void Backend_InsertBan(const int client) {
     char adminSteamId[64];
     ban.GetAdmin(adminSteamId, sizeof(adminSteamId));
 
+    int time = GetTime();
+
     // Create and format the query.
     char query[1024];
-    Format(query, sizeof(query), INSERT_BAN, clientName, clientSteamId, clientIpAddress, clientCountry, ban.GetDuration(), ban.GetTimeLeft(), reason, adminSteamId);
+    Format(query, sizeof(query), INSERT_BAN, clientName, clientSteamId, clientIpAddress, clientCountry, ban.GetDuration(), ban.GetTimeLeft(), reason, adminSteamId, time, time);
 
     // Execute the query.
     g_dbCTBans.Query(Callback_InsertBan, query, client);
@@ -197,9 +197,11 @@ public void Backend_InsertBanObject(Ban ban) {
     char adminSteamId[64];
     ban.GetAdmin(adminSteamId, sizeof(adminSteamId));
 
+    int time = GetTime();
+
     // Create and format the query.
     char query[1024];
-    Format(query, sizeof(query), INSERT_BAN, clientName, clientSteamId, clientIpAddress, clientCountry, ban.GetDuration(), ban.GetTimeLeft(), reason, adminSteamId);
+    Format(query, sizeof(query), INSERT_BAN, clientName, clientSteamId, clientIpAddress, clientCountry, ban.GetDuration(), ban.GetTimeLeft(), reason, adminSteamId, time, time);
 
     // Execute the query.
     g_dbCTBans.Query(Callback_InsertBan, query, 0);

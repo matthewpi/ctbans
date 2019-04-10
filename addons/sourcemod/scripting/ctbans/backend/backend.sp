@@ -21,7 +21,7 @@ public void Backend_Connnection(Database database, const char[] error, any data)
     LogMessage("%s Connected to database.", CONSOLE_PREFIX);
 
     // Prepare a SQL transaction.
-    Transaction transaction = SQL_CreateTransaction();
+    Transaction transaction = new Transaction();
 
     // Add create table if not exists queries.
     transaction.AddQuery(TABLE_BANS);
@@ -51,7 +51,7 @@ public void Backend_Connnection(Database database, const char[] error, any data)
  * Successful backend callback for the table layout.
  */
 static void Callback_SuccessTableTransaction(Database database, any data, int numQueries, Handle[] results, any[] queryData) {
-    //LogMessage("%s Created database tables successfully.", CONSOLE_PREFIX);
+    LogMessage("%s Created database tables successfully.", CONSOLE_PREFIX);
 }
 
 /**
