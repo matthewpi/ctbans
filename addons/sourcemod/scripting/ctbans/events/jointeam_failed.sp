@@ -12,21 +12,21 @@ public Action Event_JoinTeamFailed(Event event, const char[] name, const bool do
     int reason = event.GetInt("reason");
 
     // Check if the client is invalid.
-    if(!IsClientValid(client)) {
+    if (!IsClientValid(client)) {
         return Plugin_Continue;
     }
 
-    if(reason != 0) {
+    if (reason != 0) {
         return Plugin_Continue;
     }
 
     // Get and check if the client has an active ban.
     Ban ban = g_hBans[client];
-    if(ban == null) {
+    if (ban == null) {
         return Plugin_Continue;
     }
 
-    if(!ban.IsActive()) {
+    if (!ban.IsActive()) {
         return Plugin_Continue;
     }
 

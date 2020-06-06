@@ -15,15 +15,12 @@
 // Definitions
 // CTBans
 #define CTBANS_AUTHOR  "Matthew \"MP\" Penner"
-#define CTBANS_VERSION "0.0.1-BETA"
+#define CTBANS_VERSION "0.0.2"
 
 // Prefixes
 #define PREFIX         "[\x06CT Bans\x01]"
 #define ACTION_PREFIX  "[\x06CT Bans\x01]\x08 "
 #define CONSOLE_PREFIX "[CT Bans]"
-
-// Limits
-#define GROUP_MAX 16
 // END Definitions
 
 // Project Models
@@ -113,17 +110,17 @@ public void OnPluginStart() {
 
     // Events
     // ctbans/events/jointeam_failed.sp
-    /*if(!HookEventEx("jointeam_failed", Event_JoinTeamFailed, EventHookMode_Pre)) {
+    /*if (!HookEventEx("jointeam_failed", Event_JoinTeamFailed, EventHookMode_Pre)) {
         SetFailState("%s Failed to hook \"jointeam_failed\" event, disabling plugin..", CONSOLE_PREFIX);
         return;
     }*/
     // ctbans/events/player_spawn.sp
-    if(!HookEventEx("player_spawn", Event_PlayerSpawn)) {
+    if (!HookEventEx("player_spawn", Event_PlayerSpawn)) {
         SetFailState("%s Failed to hook \"player_spawn\" event, disabling plugin..", CONSOLE_PREFIX);
         return;
     }
     // ctbans/events/player_team.sp
-    if(!HookEventEx("player_team", Event_PlayerTeam)) {
+    if (!HookEventEx("player_team", Event_PlayerTeam)) {
         SetFailState("%s Failed to hook \"player_team\" event, disabling plugin..", CONSOLE_PREFIX);
         return;
     }
@@ -155,9 +152,9 @@ public void OnConfigsExecuted() {
  */
 public void OnPluginEnd() {
     // Loop through all online clients.
-    for(int i = 1; i <= MaxClients; i++) {
+    for (int i = 1; i <= MaxClients; i++) {
         // Check if the client is invalid.
-        if(!IsClientValid(i)) {
+        if (!IsClientValid(i)) {
             continue;
         }
 
@@ -171,7 +168,7 @@ public void OnPluginEnd() {
  */
 public void OnClientAuthorized(int client, const char[] auth) {
     // Ignore bot users.
-    if(StrEqual(auth, "BOT", true)) {
+    if (StrEqual(auth, "BOT", true)) {
         return;
     }
 
@@ -193,20 +190,20 @@ public void OnClientDisconnect(int client) {
     GetClientAuthId(client, AuthId_Steam2, auth, sizeof(auth));
 
     // Ignore bot users.
-    if(StrEqual(auth, "BOT", true)) {
+    if (StrEqual(auth, "BOT", true)) {
         return;
     }
 
     char buffer[64];
-    for(int i = 0; i < g_alDisconnected.Length-1; i++) {
+    for (int i = 0; i < g_alDisconnected.Length-1; i++) {
         Player player = g_alDisconnected.Get(i);
-        if(player == null) {
+        if (player == null) {
             continue;
         }
 
         player.GetSteamID(buffer, sizeof(buffer));
 
-        if(StrEqual(buffer, auth, true)) {
+        if (StrEqual(buffer, auth, true)) {
             g_alDisconnected.Erase(i);
             break;
         }
@@ -232,26 +229,35 @@ public void OnClientDisconnect(int client) {
     delete g_hBans[client];
 }
 
+/**
+ * OnMapEnd
+ * Called whenever the current map ends.
+ */
+public void OnMapEnd() {
+    // Clear the recently disconnected players list to prevent it from overflowing.
+    g_alDisconnected = CreateArray();
+}
+
 static Action Timer_BanReduce(Handle timer) {
     // Loop through all online clients.
-    for(int client = 1; client <= MaxClients; client++) {
+    for (int client = 1; client <= MaxClients; client++) {
         // Check if the client is invalid.
-        if(!IsClientValid(client)) {
+        if (!IsClientValid(client)) {
             continue;
         }
 
         // Check if the player is dead.
-        if(!IsPlayerAlive(client)) {
+        if (!IsPlayerAlive(client)) {
             continue;
         }
 
         Ban ban = g_hBans[client];
-        if(ban == null) {
+        if (ban == null) {
             continue;
         }
 
         // Check if the ban duration is indefinite.
-        if(ban.GetDuration() == 0) {
+        if (ban.GetDuration() == 0) {
             continue;
         }
 
@@ -259,7 +265,7 @@ static Action Timer_BanReduce(Handle timer) {
         ban.SetTimeLeft(ban.GetTimeLeft() - 1);
 
         // Check if the ban's timeLeft is lower than 1
-        if(ban.GetTimeLeft() < 1) {
+        if (ban.GetTimeLeft() < 1) {
             // Make sure the ban's timeLeft is set to 0.
             ban.SetTimeLeft(0);
             ban.SetExpired(true);

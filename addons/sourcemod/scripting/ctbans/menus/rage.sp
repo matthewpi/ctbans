@@ -11,16 +11,16 @@ void CTBans_RageMenu(const int client, const int position = -1) {
     Menu menu = CreateMenu(Callback_RageMenu);
     menu.SetTitle("CT Bans | Rage Ban");
 
-    if(g_alDisconnected.Length < 1) {
+    if (g_alDisconnected.Length < 1) {
         PrintToChat(client, "%s There have been no recently disconnected players.", PREFIX);
         return;
     }
 
     char info[32];
     char display[128];
-    for(int i = 0; i < g_alDisconnected.Length; i++) {
+    for (int i = g_alDisconnected.Length-1; i >= 0; i--) {
         Player player = g_alDisconnected.Get(i);
-        if(player == null) {
+        if (player == null) {
             continue;
         }
 
@@ -30,7 +30,7 @@ void CTBans_RageMenu(const int client, const int position = -1) {
     }
 
     // Display the menu to the client.
-    if(position == -1) {
+    if (position == -1) {
         menu.Display(client, 0);
     } else {
         menu.DisplayAt(client, position, 0);
@@ -38,7 +38,7 @@ void CTBans_RageMenu(const int client, const int position = -1) {
 }
 
 static int Callback_RageMenu(Menu menu, MenuAction action, int client, int itemNum) {
-    switch(action) {
+    switch (action) {
         case MenuAction_Select: {
             char info[32];
             menu.GetItem(itemNum, info, sizeof(info));
@@ -46,7 +46,7 @@ static int Callback_RageMenu(Menu menu, MenuAction action, int client, int itemN
             int playerId = StringToInt(info);
 
             Player player = g_alDisconnected.Get(playerId);
-            if(player == null) {
+            if (player == null) {
                 CTBans_RageMenu(client, GetMenuSelectionPosition());
                 return;
             }
@@ -69,7 +69,7 @@ void CTBans_RageTimeMenu(const int client, const int playerId, const int positio
     menu.SetTitle("CT Bans | Rage Ban");
 
     Player player = g_alDisconnected.Get(playerId);
-    if(player == null) {
+    if (player == null) {
         CTBans_RageMenu(client);
         return;
     }
@@ -104,7 +104,7 @@ void CTBans_RageTimeMenu(const int client, const int playerId, const int positio
     menu.ExitBackButton = true;
 
     // Display the menu to the client.
-    if(position == -1) {
+    if (position == -1) {
         menu.Display(client, 0);
     } else {
         menu.DisplayAt(client, position, 0);
@@ -112,7 +112,7 @@ void CTBans_RageTimeMenu(const int client, const int playerId, const int positio
 }
 
 static int Callback_RageTimeMenu(Menu menu, MenuAction action, int client, int itemNum) {
-    switch(action) {
+    switch (action) {
         case MenuAction_Select: {
             char info[32];
             menu.GetItem(itemNum, info, sizeof(info));
@@ -121,7 +121,7 @@ static int Callback_RageTimeMenu(Menu menu, MenuAction action, int client, int i
             int playerId = g_iMenuSelection[client];
 
             Player player = g_alDisconnected.Get(playerId);
-            if(player == null) {
+            if (player == null) {
                 CTBans_RageMenu(client);
                 return;
             }
@@ -164,7 +164,7 @@ static int Callback_RageTimeMenu(Menu menu, MenuAction action, int client, int i
         }
 
         case MenuAction_Cancel: {
-            if(itemNum == MenuCancel_ExitBack) {
+            if (itemNum == MenuCancel_ExitBack) {
                 CTBans_RageMenu(client);
             }
         }

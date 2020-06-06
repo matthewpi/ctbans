@@ -12,7 +12,7 @@ public Action Command_CTBan(const int client, const int args) {
     char command[64] = "sm_ctban";
 
     // Check if the client did not pass proper arguments.
-    if(args < 3) {
+    if (args < 3) {
         // Send a message to the client.
         ReplyToCommand(client, "%s \x07Usage: \x01%s <#userid;target> <duration> <reason>", PREFIX, command);
 
@@ -27,7 +27,7 @@ public Action Command_CTBan(const int client, const int args) {
 
     // Attempt to get and target a player using the first command argument.
     int target = FindTarget(client, potentialTarget, true, true);
-    if(target == -1) {
+    if (target == -1) {
         // Log the command execution.
         LogCommand(client, -1, command, "(Targetting error)");
         return Plugin_Handled;
@@ -44,7 +44,7 @@ public Action Command_CTBan(const int client, const int args) {
     int duration = StringToInt(durationString);
 
     // Check if duration is not a valid integer.
-    if(!StrEqual(durationString, "0") && duration == 0) {
+    if (!StrEqual(durationString, "0") && duration == 0) {
         // Send a message to the client.
         ReplyToCommand(client, "%s \x10%s\x01 is not a valid ban duration.", PREFIX, durationString);
 
@@ -54,17 +54,17 @@ public Action Command_CTBan(const int client, const int args) {
     }
 
     char reason[128] = "";
-    for(int i = 3; i <= args; i++) {
+    for (int i = 3; i <= args; i++) {
         char buffer[64];
         GetCmdArg(i, buffer, sizeof(buffer));
-        if(i != 3) {
+        if (i != 3) {
             Format(buffer, sizeof(buffer), " %s", buffer);
         }
         StrCat(reason, sizeof(reason), buffer);
     }
 
     // Check if the target is invalid.
-    if(!IsClientValid(target)) {
+    if (!IsClientValid(target)) {
         // Send a message to the client.
         ReplyToCommand(client, "%s \x10%N\x01 is not a valid player.", CONSOLE_PREFIX, target);
 
@@ -74,7 +74,7 @@ public Action Command_CTBan(const int client, const int args) {
     }
 
     // Check if the target already has a ban.
-    if(g_hBans[target] != null) {
+    if (g_hBans[target] != null) {
         // Send a message to the client.
         ReplyToCommand(client, "%s \x10%s\x01 already has an active \x07CT Ban\x01.", CONSOLE_PREFIX, targetName);
 

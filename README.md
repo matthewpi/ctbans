@@ -1,2 +1,2 @@
-# Overlord
+# CT Bans
 SoonTM

@@ -27,7 +27,7 @@ public int Native_AddBan(Handle plugin, int params) {
     GetNativeString(4, reason, sizeof(reason));
 
     // Get if the client already has a ban.
-    if(g_hBans[client] != null) {
+    if (g_hBans[client] != null) {
         return;
     }
 
@@ -49,7 +49,7 @@ public int Native_AddBan(Handle plugin, int params) {
 
     // Get the admin's steam id.
     char adminSteamId[64];
-    if(admin == 0) {
+    if (admin == 0) {
         adminSteamId = "STEAM_ID_SERVER";
     } else {
         GetClientAuthId(admin, AuthId_Steam2, adminSteamId, sizeof(adminSteamId));
@@ -73,7 +73,7 @@ public int Native_AddBan(Handle plugin, int params) {
     g_hBans[client] = ban;
 
     // Check if the ban's duration is indefinite
-    if(duration == 0) {
+    if (duration == 0) {
         // Log the ban activity.
         LogActivity(admin, "\x01Banned \x10%N\x01 indefinitely. (Reason: \"\x07%s\x01\")", client, reason);
     } else {
@@ -82,9 +82,9 @@ public int Native_AddBan(Handle plugin, int params) {
     }
 
     // Switch the client to the terrorist team.
-    if(GetClientTeam(client) == CS_TEAM_CT) {
+    if (GetClientTeam(client) == CS_TEAM_CT) {
         // Check if the client is alive.
-        if(IsPlayerAlive(client)) {
+        if (IsPlayerAlive(client)) {
             // Disarm the client.
             DisarmClient(client);
 
@@ -109,20 +109,20 @@ public int Native_RemoveBan(Handle plugin, int params) {
     int admin = GetNativeCell(2);
 
     Ban ban = g_hBans[client];
-    if(ban == null) {
+    if (ban == null) {
         LogMessage("%s Ban is null.", CONSOLE_PREFIX);
         return;
     }
 
     // Check if the ban is inactive.
-    if(!ban.IsActive()) {
+    if (!ban.IsActive()) {
         LogMessage("%s Ban is inactive.", CONSOLE_PREFIX);
         return;
     }
 
     // Get the admin's steam id.
     char adminSteamId[64];
-    if(client == 0) {
+    if (client == 0) {
         adminSteamId = "STEAM_ID_SERVER";
     } else {
         GetClientAuthId(admin, AuthId_Steam2, adminSteamId, sizeof(adminSteamId));

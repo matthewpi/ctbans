@@ -11,25 +11,25 @@ public Action Event_PlayerSpawn(Event event, const char[] name, const bool dontB
     int client = GetClientOfUserId(event.GetInt("userid"));
 
     // Check if the client is invalid.
-    if(!IsClientValid(client)) {
+    if (!IsClientValid(client)) {
         return Plugin_Continue;
     }
 
-    if(GetClientTeam(client) != CS_TEAM_CT) {
+    if (GetClientTeam(client) != CS_TEAM_CT) {
         return Plugin_Continue;
     }
 
     // Get and check if the client has an active ban.
     Ban ban = g_hBans[client];
-    if(ban == null) {
+    if (ban == null) {
         return Plugin_Continue;
     }
 
-    if(!ban.IsActive()) {
+    if (!ban.IsActive()) {
         return Plugin_Continue;
     }
 
-    if(IsPlayerAlive(client)) {
+    if (IsPlayerAlive(client)) {
         // Disarm the client.
         DisarmClient(client);
 

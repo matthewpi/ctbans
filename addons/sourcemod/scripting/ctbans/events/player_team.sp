@@ -11,22 +11,22 @@ public Action Event_PlayerTeam(Event event, const char[] name, const bool dontBr
     int client = GetClientOfUserId(event.GetInt("userid"));
 
     // Check if the client is invalid.
-    if(!IsClientValid(client)) {
+    if (!IsClientValid(client)) {
         return Plugin_Continue;
     }
 
-    if(event.GetInt("team") != CS_TEAM_CT) {
+    if (event.GetInt("team") != CS_TEAM_CT) {
         return Plugin_Continue;
     }
 
     // Get and check if the client has a ban.
     Ban ban = g_hBans[client];
-    if(ban == null) {
+    if (ban == null) {
         return Plugin_Continue;
     }
 
     // Check if the ban is active.
-    if(!ban.IsActive()) {
+    if (!ban.IsActive()) {
         return Plugin_Continue;
     }
 
@@ -34,7 +34,7 @@ public Action Event_PlayerTeam(Event event, const char[] name, const bool dontBr
     ban.GetReason(reason, sizeof(reason));
 
     // Check if the ban is indefinite.
-    if(ban.GetDuration() == 0) {
+    if (ban.GetDuration() == 0) {
         PrintToChat(client, "%s You are is indefinitely banned from CT.", PREFIX);
     } else {
         PrintToChat(client, "%s You are temporarily banned from CT for \x07%i\x01 more minutes.", PREFIX, ban.GetTimeLeft());
@@ -49,23 +49,23 @@ public Action Event_PlayerTeam(Event event, const char[] name, const bool dontBr
 }
 
 static Action Timer_DelayedSwap(Handle timer, int client) {
-    if(!IsClientInGame(client) || GetClientTeam(client) != CS_TEAM_CT) {
+    if (!IsClientInGame(client) || GetClientTeam(client) != CS_TEAM_CT) {
         return Plugin_Handled;
     }
 
     // Get and check if the client has a ban.
     Ban ban = g_hBans[client];
-    if(ban == null) {
+    if (ban == null) {
         return Plugin_Continue;
     }
 
     // Check if the ban is active.
-    if(!ban.IsActive()) {
+    if (!ban.IsActive()) {
         return Plugin_Continue;
     }
 
     // Check if the client is alive.
-    if(IsPlayerAlive(client)) {
+    if (IsPlayerAlive(client)) {
         // Disarm the client.
         DisarmClient(client);
 

@@ -9,7 +9,7 @@
  */
 public void Backend_Connnection(Database database, const char[] error, any data) {
     // Handle the connection error.
-    if(database == null) {
+    if (database == null) {
         SetFailState("%s Failed to connect to server.  Error: %s", CONSOLE_PREFIX, error);
         return;
     }
@@ -30,9 +30,9 @@ public void Backend_Connnection(Database database, const char[] error, any data)
     SQL_ExecuteTransaction(g_dbCTBans, transaction, Callback_SuccessTableTransaction, Callback_ErrorTableTransaction);
 
     // Loop through all online clients.
-    for(int i = 1; i <= MaxClients; i++) {
+    for (int i = 1; i <= MaxClients; i++) {
         // Check if the client is invalid.
-        if(!IsClientValid(i)) {
+        if (!IsClientValid(i)) {
             continue;
         }
 

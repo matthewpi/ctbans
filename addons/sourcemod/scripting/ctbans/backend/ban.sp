@@ -22,7 +22,7 @@ public void Backend_GetBan(const int client, const char[] steamId) {
  */
 static void Callback_GetBan(Database database, DBResultSet results, const char[] error, int client) {
     // Handle query error.
-    if(results == null) {
+    if (results == null) {
         LogError("%s Query failure. %s >> %s", CONSOLE_PREFIX, "Callback_GetBan", (strlen(error) > 0 ? error : "Unknown."));
         return;
     }
@@ -41,22 +41,22 @@ static void Callback_GetBan(Database database, DBResultSet results, const char[]
     int expiredIndex;
     int createdAtIndex;
 
-    if(!results.FieldNameToNum("id", idIndex)) { LogError("%s Failed to locate \"id\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
-    if(!results.FieldNameToNum("steamId", steamIdIndex)) { LogError("%s Failed to locate \"steamId\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
-    if(!results.FieldNameToNum("ipAddress", ipAddressIndex)) { LogError("%s Failed to locate \"ipAddress\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
-    if(!results.FieldNameToNum("country", countryIndex)) { LogError("%s Failed to locate \"country\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
-    if(!results.FieldNameToNum("duration", durationIndex)) { LogError("%s Failed to locate \"duration\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
-    if(!results.FieldNameToNum("timeLeft", timeLeftIndex)) { LogError("%s Failed to locate \"timeLeft\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
-    if(!results.FieldNameToNum("reason", reasonIndex)) { LogError("%s Failed to locate \"reason\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
-    if(!results.FieldNameToNum("admin", adminIndex)) { LogError("%s Failed to locate \"admin\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
-    if(!results.FieldNameToNum("removedBy", removedByIndex)) { LogError("%s Failed to locate \"removedBy\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
-    if(!results.FieldNameToNum("removedAt", removedAtIndex)) { LogError("%s Failed to locate \"removedAt\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
-    if(!results.FieldNameToNum("expired", expiredIndex)) { LogError("%s Failed to locate \"expired\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
-    if(!results.FieldNameToNum("createdAt", createdAtIndex)) { LogError("%s Failed to locate \"createdAt\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
+    if (!results.FieldNameToNum("id", idIndex)) { LogError("%s Failed to locate \"id\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
+    if (!results.FieldNameToNum("steamId", steamIdIndex)) { LogError("%s Failed to locate \"steamId\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
+    if (!results.FieldNameToNum("ipAddress", ipAddressIndex)) { LogError("%s Failed to locate \"ipAddress\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
+    if (!results.FieldNameToNum("country", countryIndex)) { LogError("%s Failed to locate \"country\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
+    if (!results.FieldNameToNum("duration", durationIndex)) { LogError("%s Failed to locate \"duration\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
+    if (!results.FieldNameToNum("timeLeft", timeLeftIndex)) { LogError("%s Failed to locate \"timeLeft\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
+    if (!results.FieldNameToNum("reason", reasonIndex)) { LogError("%s Failed to locate \"reason\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
+    if (!results.FieldNameToNum("admin", adminIndex)) { LogError("%s Failed to locate \"admin\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
+    if (!results.FieldNameToNum("removedBy", removedByIndex)) { LogError("%s Failed to locate \"removedBy\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
+    if (!results.FieldNameToNum("removedAt", removedAtIndex)) { LogError("%s Failed to locate \"removedAt\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
+    if (!results.FieldNameToNum("expired", expiredIndex)) { LogError("%s Failed to locate \"expired\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
+    if (!results.FieldNameToNum("createdAt", createdAtIndex)) { LogError("%s Failed to locate \"createdAt\" field in table \"ctbans_bans\".", CONSOLE_PREFIX); return; }
     // END Get table column indexes.
 
     // Loop through query results.
-    while(results.FetchRow()) {
+    while (results.FetchRow()) {
         // Pull row information.
         int id = results.FetchInt(idIndex);
         char steamId[64];
@@ -71,16 +71,16 @@ static void Callback_GetBan(Database database, DBResultSet results, const char[]
         bool expired = false;
         int createdAt = results.FetchInt(createdAtIndex);
 
-        if(!results.IsFieldNull(removedAtIndex)) {
+        if (!results.IsFieldNull(removedAtIndex)) {
             removedAt = results.FetchInt(removedAtIndex);
             LogMessage("%s Removed At is not null. (%i)", CONSOLE_PREFIX, removedAt);
         }
 
-        if(!results.IsFieldNull(removedByIndex)) {
+        if (!results.IsFieldNull(removedByIndex)) {
             results.FetchString(removedByIndex, removedBy, sizeof(removedBy));
         }
 
-        if(results.FetchInt(expiredIndex) == 1) {
+        if (results.FetchInt(expiredIndex) == 1) {
             expired = true;
         }
 
@@ -107,7 +107,7 @@ static void Callback_GetBan(Database database, DBResultSet results, const char[]
         ban.SetCreatedAt(createdAt);
 
         // Check if the ban is active.
-        if(!ban.IsActive()) {
+        if (!ban.IsActive()) {
             // Log that we found an admin.
             LogMessage("%s Found ban for '%N' but it is inactive (Steam ID: '%s')", CONSOLE_PREFIX, client, steamId);
             delete ban;
@@ -130,7 +130,7 @@ static void Callback_GetBan(Database database, DBResultSet results, const char[]
  */
 public void Backend_InsertBan(const int client) {
     Ban ban = g_hBans[client];
-    if(ban == null) {
+    if (ban == null) {
         return;
     }
 
@@ -213,13 +213,13 @@ public void Backend_InsertBanObject(Ban ban) {
  */
 static void Callback_InsertBan(Database database, DBResultSet results, const char[] error, int client) {
     // Handle query error.
-    if(results == null) {
+    if (results == null) {
         LogError("%s Query failure. %s >> %s", CONSOLE_PREFIX, "Callback_InsertBan", (strlen(error) > 0 ? error : "Unknown."));
         return;
     }
 
     // Check if a valid client index was passed.
-    if(client != 0) {
+    if (client != 0) {
         LogMessage("%s Inserted CT Ban for '%N'", CONSOLE_PREFIX, client);
     }
 }
@@ -230,7 +230,7 @@ static void Callback_InsertBan(Database database, DBResultSet results, const cha
  */
 public void Backend_UpdateBan(const int client) {
     Ban ban = g_hBans[client];
-    if(ban == null) {
+    if (ban == null) {
         return;
     }
 
@@ -252,12 +252,12 @@ public void Backend_UpdateBan(const int client) {
  */
 static void Callback_UpdateBan(Database database, DBResultSet results, const char[] error, int client) {
     // Handle query error.
-    if(results == null) {
+    if (results == null) {
         LogError("%s Query failure. %s >> %s", CONSOLE_PREFIX, "Callback_UpdateBan", (strlen(error) > 0 ? error : "Unknown."));
         return;
     }
 
-    if(IsClientConnected(client)) {
+    if (IsClientConnected(client)) {
         LogMessage("%s Updated CT Ban for '%N'", CONSOLE_PREFIX, client);
     } else {
         LogMessage("%s Updated CT Ban for %i", CONSOLE_PREFIX, client);
@@ -270,7 +270,7 @@ static void Callback_UpdateBan(Database database, DBResultSet results, const cha
  */
 public void Backend_UpdateBanRemoved(const int client) {
     Ban ban = g_hBans[client];
-    if(ban == null) {
+    if (ban == null) {
         return;
     }
 
@@ -296,7 +296,7 @@ public void Backend_UpdateBanRemoved(const int client) {
  */
 static void Callback_UpdateBanRemoved(Database database, DBResultSet results, const char[] error, int client) {
     // Handle query error.
-    if(results == null) {
+    if (results == null) {
         LogError("%s Query failure. %s >> %s", CONSOLE_PREFIX, "Callback_UpdateBanRemoved", (strlen(error) > 0 ? error : "Unknown."));
         return;
     }

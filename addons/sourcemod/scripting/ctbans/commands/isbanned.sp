@@ -11,13 +11,13 @@ public Action Command_IsBanned(const int client, const int args) {
     // Variable to hold the command name.
     char command[64] = "sm_isbanned";
 
-    if(args == 0 && client == 0) {
+    if (args == 0 && client == 0) {
         ReplyToCommand(client, "%s Because you are the console, you are indefinitely banned from CT.", PREFIX);
         return Plugin_Handled;
     }
 
     // Check if the client passed no arguments.
-    if(args == 0) {
+    if (args == 0) {
         Ban ban = g_hBans[client];
 
         if(ban == null) {
@@ -25,9 +25,9 @@ public Action Command_IsBanned(const int client, const int args) {
             ReplyToCommand(client, "%s You don't have an active \x07CT Ban\x01.", PREFIX);
         } else {
             // Check if the ban is indefinite.
-            if(ban.GetDuration() == 0) {
+            if (ban.GetDuration() == 0) {
                 // Send a message to the client.
-                ReplyToCommand(client, "%s You are is indefinitely banned from CT.", PREFIX);
+                ReplyToCommand(client, "%s You are indefinitely banned from CT.", PREFIX);
             } else {
                 // Send a message to the client.
                 ReplyToCommand(client, "%s You are temporarily banned from CT for \x07%i\x01 more minutes.", PREFIX, ban.GetTimeLeft());
@@ -49,7 +49,7 @@ public Action Command_IsBanned(const int client, const int args) {
     }
 
     // Check if the client passed too many arguments.
-    if(args > 1) {
+    if (args > 1) {
         // Send a message to the client.
         ReplyToCommand(client, "%s \x07Usage: \x01%s <#userid;target>", PREFIX, command);
 
@@ -64,7 +64,7 @@ public Action Command_IsBanned(const int client, const int args) {
 
     // Attempt to get and target a player using the first command argument.
     int target = FindTarget(client, potentialTarget, true, false);
-    if(target == -1) {
+    if (target == -1) {
         // Log the command execution.
         LogCommand(client, -1, command, "(Targetting error)");
         return Plugin_Handled;
@@ -78,12 +78,12 @@ public Action Command_IsBanned(const int client, const int args) {
     Ban ban = g_hBans[target];
 
     // Check if the target has a ban.
-    if(ban == null) {
+    if (ban == null) {
         // Send a message to the client.
         ReplyToCommand(client, "%s \x10%s\x01 does not have an active \x07CT Ban\x01.", PREFIX, targetName);
     } else {
         // Check if the ban is indefinite.
-        if(ban.GetDuration() == 0) {
+        if (ban.GetDuration() == 0) {
             // Send a message to the client.
             ReplyToCommand(client, "%s \x10%s\x01 is indefinitely banned from CT.", PREFIX, targetName);
         } else {

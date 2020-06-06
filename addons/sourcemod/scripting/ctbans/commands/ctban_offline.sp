@@ -12,7 +12,7 @@ public Action Command_CTBanOffline(const int client, const int args) {
     char command[64] = "sm_ctban_offline";
 
     // Check if there are no arguments passed.
-    if(args == 0) {
+    if (args == 0) {
         CTBans_RageMenu(client);
 
         // Log the command execution.
@@ -21,7 +21,7 @@ public Action Command_CTBanOffline(const int client, const int args) {
     }
 
     // Check if the client did not pass proper arguments.
-    if(args < 3) {
+    if (args < 3) {
         // Send a message to the client.
         ReplyToCommand(client, "%s \x07Usage: \x01%s <steamId> <duration> <reason>", PREFIX, command);
 
@@ -41,7 +41,7 @@ public Action Command_CTBanOffline(const int client, const int args) {
     int duration = StringToInt(durationString);
 
     // Check if duration is not a valid integer.
-    if(!StrEqual(durationString, "0") && duration == 0) {
+    if (!StrEqual(durationString, "0") && duration == 0) {
         // Send a message to the client.
         ReplyToCommand(client, "%s \x10%s\x01 is not a valid ban duration.", PREFIX, durationString);
 
@@ -51,10 +51,10 @@ public Action Command_CTBanOffline(const int client, const int args) {
     }
 
     char reason[128] = "";
-    for(int i = 3; i <= args; i++) {
+    for (int i = 3; i <= args; i++) {
         char buffer[64];
         GetCmdArg(i, buffer, sizeof(buffer));
-        if(i != 3) {
+        if (i != 3) {
             Format(buffer, sizeof(buffer), " %s", buffer);
         }
         StrCat(reason, sizeof(reason), buffer);
@@ -62,7 +62,7 @@ public Action Command_CTBanOffline(const int client, const int args) {
 
     // Get the admin's steam id.
     char adminSteamId[64];
-    if(client == 0) {
+    if (client == 0) {
         adminSteamId = "STEAM_ID_SERVER";
     } else {
         GetClientAuthId(client, AuthId_Steam2, adminSteamId, sizeof(adminSteamId));
@@ -83,7 +83,7 @@ public Action Command_CTBanOffline(const int client, const int args) {
     ban.SetCreatedAt(GetTime());
 
     // Check if the ban's duration is indefinite
-    if(duration == 0) {
+    if (duration == 0) {
         // Log the ban activity.
         LogActivity(client, "\x01Banned \x10%s\x01 indefinitely. (Reason: \"\x07%s\x01\")", steamId, reason);
     } else {

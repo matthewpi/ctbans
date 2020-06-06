@@ -12,7 +12,7 @@ public Action Command_UnCTBan(const int client, const int args) {
     char command[64] = "sm_unctban";
 
     // Check if the client did not pass proper arguments.
-    if(args != 1) {
+    if (args != 1) {
         // Send a message to the client.
         ReplyToCommand(client, "%s \x07Usage: \x01%s <#userid;target>", PREFIX, command);
 
@@ -27,7 +27,7 @@ public Action Command_UnCTBan(const int client, const int args) {
 
     // Attempt to get and target a player using the first command argument.
     int target = FindTarget(client, potentialTarget, true, true);
-    if(target == -1) {
+    if (target == -1) {
         // Log the command execution.
         LogCommand(client, -1, command, "(Targetting error)");
         return Plugin_Handled;
@@ -38,7 +38,7 @@ public Action Command_UnCTBan(const int client, const int args) {
     GetClientName(target, targetName, sizeof(targetName));
 
     // Check if the target is invalid.
-    if(!IsClientValid(target)) {
+    if (!IsClientValid(target)) {
         // Send a message to the client.
         ReplyToCommand(client, "%s \x10%N\x01 is not a valid player.", CONSOLE_PREFIX, target);
 
@@ -48,7 +48,7 @@ public Action Command_UnCTBan(const int client, const int args) {
     }
 
     // Check if the target already has a ban.
-    if(g_hBans[target] == null) {
+    if (g_hBans[target] == null) {
         // Send a message to the client.
         ReplyToCommand(client, "%s \x10%s\x01 does not have a \x07CT Ban\x01.", CONSOLE_PREFIX, targetName);
 
