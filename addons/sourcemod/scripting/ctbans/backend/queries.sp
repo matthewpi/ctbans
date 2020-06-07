@@ -26,6 +26,10 @@ CREATE TABLE IF NOT EXISTS `ctbans_bans` (\
 ) ENGINE=InnoDB DEFAULT CHARSET 'utf8';\
 "
 
+#define TABLE_BANS_INDEX "\
+CREATE INDEX IF NOT EXISTS ctbans_bans_steamId_index ON ctbans_bans (steamId);\
+"
+
 // Gets a client's ban.
 #define GET_BAN "\
 SELECT `ctbans_bans`.`id`, `ctbans_bans`.`steamId`, `ctbans_bans`.`ipAddress`, `ctbans_bans`.`country`, `ctbans_bans`.`duration`, \

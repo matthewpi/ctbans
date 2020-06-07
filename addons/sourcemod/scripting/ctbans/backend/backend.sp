@@ -25,6 +25,7 @@ public void Backend_Connnection(Database database, const char[] error, any data)
 
     // Add create table if not exists queries.
     transaction.AddQuery(TABLE_BANS);
+    transaction.AddQuery(TABLE_BANS_INDEX);
 
     // Execute the transaction.
     SQL_ExecuteTransaction(g_dbCTBans, transaction, Callback_SuccessTableTransaction, Callback_ErrorTableTransaction);

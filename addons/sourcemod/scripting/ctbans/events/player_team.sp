@@ -35,7 +35,7 @@ public Action Event_PlayerTeam(Event event, const char[] name, const bool dontBr
 
     // Check if the ban is indefinite.
     if (ban.GetDuration() == 0) {
-        PrintToChat(client, "%s You are is indefinitely banned from CT.", PREFIX);
+        PrintToChat(client, "%s You are indefinitely banned from CT.", PREFIX);
     } else {
         PrintToChat(client, "%s You are temporarily banned from CT for \x07%i\x01 more minutes.", PREFIX, ban.GetTimeLeft());
     }
