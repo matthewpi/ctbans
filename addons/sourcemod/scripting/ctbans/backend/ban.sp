@@ -8,9 +8,13 @@
  * Loads a user's ban information.
  */
 public void Backend_GetBan(const int client, const char[] steamId) {
+    int bufferLength = strlen(steamId) * 2 + 1;
+    char[] escapedSteamId = new char[bufferLength];
+    g_dbCTBans.Escape(steamId, escapedSteamId, bufferLength);
+
     // Create and format the query.
     char query[1024];
-    Format(query, sizeof(query), GET_BAN, steamId);
+    Format(query, sizeof(query), GET_BAN, escapedSteamId);
 
     // Execute the query.
     g_dbCTBans.Query(Callback_GetBan, query, client);
@@ -134,77 +138,70 @@ public void Backend_InsertBan(const int client) {
         return;
     }
 
-    // Get client's name.
-    char clientName[128];
-    ban.GetName(clientName, sizeof(clientName));
-
-    // Get the client's steam id.
-    char clientSteamId[64];
-    ban.GetSteamID(clientSteamId, sizeof(clientSteamId));
-
-    // Get the client's ip address.
-    char clientIpAddress[16];
-    ban.GetIpAddress(clientIpAddress, sizeof(clientIpAddress));
-
-    // Get the client's country.
-    char clientCountry[4];
-    ban.GetCountry(clientCountry, sizeof(clientCountry));
-
-    // Get the admin's steam id.
-    char reason[128];
-    ban.GetReason(reason, sizeof(reason));
-
-    // Get the admin's steam id.
-    char adminSteamId[64];
-    ban.GetAdmin(adminSteamId, sizeof(adminSteamId));
-
-    int time = GetTime();
-
-    // Create and format the query.
-    char query[1024];
-    Format(query, sizeof(query), INSERT_BAN, clientName, clientSteamId, clientIpAddress, clientCountry, ban.GetDuration(), ban.GetTimeLeft(), reason, adminSteamId, time, time);
-
-    // Execute the query.
-    g_dbCTBans.Query(Callback_InsertBan, query, client);
+    Backend_InsertBanObject(ban, client);
 }
 
 /**
- * Backend_InsertBan
+ * Backend_InsertBanObject
  * Updates a ban.
  */
-public void Backend_InsertBanObject(Ban ban) {
+public void Backend_InsertBanObject(Ban ban, const int client) {
     // Get client's name.
     char clientName[128];
     ban.GetName(clientName, sizeof(clientName));
+
+    int bufferLength = strlen(clientName) * 2 + 1;
+    char[] escapedClientName = new char[bufferLength];
+    g_dbCTBans.Escape(clientName, escapedClientName, bufferLength);
 
     // Get the client's steam id.
     char clientSteamId[64];
     ban.GetSteamID(clientSteamId, sizeof(clientSteamId));
 
+    bufferLength = strlen(clientSteamId) * 2 + 1;
+    char[] escapedClientSteamId = new char[bufferLength];
+    g_dbCTBans.Escape(clientSteamId, escapedClientSteamId, bufferLength);
+
     // Get the client's ip address.
     char clientIpAddress[16];
     ban.GetIpAddress(clientIpAddress, sizeof(clientIpAddress));
+
+    bufferLength = strlen(clientIpAddress) * 2 + 1;
+    char[] escapedClientIpAddress = new char[bufferLength];
+    g_dbCTBans.Escape(clientIpAddress, escapedClientIpAddress, bufferLength);
 
     // Get the client's country.
     char clientCountry[4];
     ban.GetCountry(clientCountry, sizeof(clientCountry));
 
+    bufferLength = strlen(clientCountry) * 2 + 1;
+    char[] escapedClientCountry = new char[bufferLength];
+    g_dbCTBans.Escape(clientCountry, escapedClientCountry, bufferLength);
+
     // Get the admin's steam id.
     char reason[128];
     ban.GetReason(reason, sizeof(reason));
+
+    bufferLength = strlen(reason) * 2 + 1;
+    char[] escapedReason = new char[bufferLength];
+    g_dbCTBans.Escape(reason, escapedReason, bufferLength);
 
     // Get the admin's steam id.
     char adminSteamId[64];
     ban.GetAdmin(adminSteamId, sizeof(adminSteamId));
 
+    bufferLength = strlen(adminSteamId) * 2 + 1;
+    char[] escapedAdminSteamId = new char[bufferLength];
+    g_dbCTBans.Escape(adminSteamId, escapedAdminSteamId, bufferLength);
+
     int time = GetTime();
 
     // Create and format the query.
     char query[1024];
-    Format(query, sizeof(query), INSERT_BAN, clientName, clientSteamId, clientIpAddress, clientCountry, ban.GetDuration(), ban.GetTimeLeft(), reason, adminSteamId, time, time);
+    Format(query, sizeof(query), INSERT_BAN, escapedClientName, escapedClientSteamId, escapedClientIpAddress, escapedClientCountry, ban.GetDuration(), ban.GetTimeLeft(), escapedReason, escapedAdminSteamId, time, time);
 
     // Execute the query.
-    g_dbCTBans.Query(Callback_InsertBan, query, 0);
+    g_dbCTBans.Query(Callback_InsertBan, query, client);
 }
 
 /**
@@ -238,9 +235,13 @@ public void Backend_UpdateBan(const int client) {
     char steamId[64];
     ban.GetSteamID(steamId, sizeof(steamId));
 
+    int bufferLength = strlen(steamId) * 2 + 1;
+    char[] escapedSteamId = new char[bufferLength];
+    g_dbCTBans.Escape(steamId, escapedSteamId, bufferLength);
+
     // Create and format the query.
     char query[1024];
-    Format(query, sizeof(query), UPDATE_BAN, ban.GetTimeLeft(), ban.IsExpired() ? 1 : 0, steamId);
+    Format(query, sizeof(query), UPDATE_BAN, ban.GetTimeLeft(), ban.IsExpired() ? 1 : 0, escapedSteamId);
 
     // Execute the query.
     g_dbCTBans.Query(Callback_UpdateBan, query, client);
@@ -278,13 +279,21 @@ public void Backend_UpdateBanRemoved(const int client) {
     char removedBy[64];
     ban.GetRemovedBy(removedBy, sizeof(removedBy));
 
+    int bufferLength = strlen(removedBy) * 2 + 1;
+    char[] escapedRemovedBy = new char[bufferLength];
+    g_dbCTBans.Escape(removedBy, escapedRemovedBy, bufferLength);
+
     // Get the ban's steam id.
     char steamId[64];
     ban.GetSteamID(steamId, sizeof(steamId));
 
+    bufferLength = strlen(steamId) * 2 + 1;
+    char[] escapedSteamId = new char[bufferLength];
+    g_dbCTBans.Escape(steamId, escapedSteamId, bufferLength);
+
     // Create and format the query.
     char query[1024];
-    Format(query, sizeof(query), UPDATE_BAN_REMOVED, removedBy, ban.GetRemovedAt(), ban.IsExpired() ? 1 : 0, steamId);
+    Format(query, sizeof(query), UPDATE_BAN_REMOVED, escapedRemovedBy, ban.GetRemovedAt(), ban.IsExpired() ? 1 : 0, escapedSteamId);
 
     // Execute the query.
     g_dbCTBans.Query(Callback_UpdateBanRemoved, query, client);

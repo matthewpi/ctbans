@@ -62,7 +62,7 @@ public Action OnClientSayCommand(int client, const char[] command, const char[] 
         }
 
         // Insert the ban into the database.
-        Backend_InsertBanObject(ban);
+        Backend_InsertBanObject(ban, 0);
 
         g_hBanObject[client] = null;
         return Plugin_Stop;

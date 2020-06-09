@@ -92,7 +92,7 @@ public Action Command_CTBanOffline(const int client, const int args) {
     }
 
     // Insert the ban into the database.
-    Backend_InsertBanObject(ban);
+    Backend_InsertBanObject(ban, 0);
 
     // Log the command execution.
     LogCommand(client, -1, command, "(Target: '%s')", steamId);
