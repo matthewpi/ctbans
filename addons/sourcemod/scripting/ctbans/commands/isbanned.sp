@@ -1,11 +1,14 @@
-/**
- * Copyright (c) 2019 Matthew Penner <me@matthewp.io>
- * All rights reserved.
- */
+//
+// Copyright (c) 2020 Matthew Penner
+//
+// This repository is licensed under the MIT License.
+// https://github.com/matthewpi/ctbans/blob/master/LICENSE.md
+//
 
 /**
  * Command_IsBanned (sm_isbanned)
- * Issues a ct ban to a client.
+ *
+ * Check if a client is currently banned from the Counter-Terrorist team.
  */
 public Action Command_IsBanned(const int client, const int args) {
     // Variable to hold the command name.
@@ -42,9 +45,6 @@ public Action Command_IsBanned(const int client, const int args) {
             PrintToChat(client, " - \x06Issued On: \x07%s", createdAt);
             PrintToChat(client, " - \x06Reason: \x07%s", reason);
         }
-
-        // Log the command execution.
-        LogCommand(client, -1, command, "");
         return Plugin_Handled;
     }
 
@@ -52,9 +52,6 @@ public Action Command_IsBanned(const int client, const int args) {
     if (args > 1) {
         // Send a message to the client.
         ReplyToCommand(client, "%s \x07Usage: \x01%s <#userid;target>", PREFIX, command);
-
-        // Log the command execution.
-        LogCommand(client, -1, command, "");
         return Plugin_Handled;
     }
 
@@ -65,8 +62,6 @@ public Action Command_IsBanned(const int client, const int args) {
     // Attempt to get and target a player using the first command argument.
     int target = FindTarget(client, potentialTarget, true, false);
     if (target == -1) {
-        // Log the command execution.
-        LogCommand(client, -1, command, "(Targetting error)");
         return Plugin_Handled;
     }
 
@@ -100,9 +95,6 @@ public Action Command_IsBanned(const int client, const int args) {
         PrintToChat(client, " - \x06Issued On: \x07%s", createdAt);
         PrintToChat(client, " - \x06Reason: \x07%s", reason);
     }
-
-    // Log the command execution.
-    LogCommand(client, target, command, "(Target: '%s')", targetName);
 
     return Plugin_Handled;
 }

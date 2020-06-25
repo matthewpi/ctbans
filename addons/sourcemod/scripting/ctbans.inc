@@ -1,3 +1,10 @@
+//
+// Copyright (c) 2020 Matthew Penner
+//
+// This repository is licensed under the MIT License.
+// https://github.com/matthewpi/ctbans/blob/master/LICENSE.md
+//
+
 #if defined _ctbans_included
     #endinput
 #endif

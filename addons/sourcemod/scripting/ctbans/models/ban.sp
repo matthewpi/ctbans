@@ -1,7 +1,9 @@
-/**
- * Copyright (c) 2019 Matthew Penner <me@matthewp.io>
- * All rights reserved.
- */
+//
+// Copyright (c) 2020 Matthew Penner
+//
+// This repository is licensed under the MIT License.
+// https://github.com/matthewpi/ctbans/blob/master/LICENSE.md
+//
 
 methodmap Ban < StringMap {
     public Ban() {

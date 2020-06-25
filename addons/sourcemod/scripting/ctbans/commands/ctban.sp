@@ -1,10 +1,13 @@
-/**
- * Copyright (c) 2019 Matthew Penner <me@matthewp.io>
- * All rights reserved.
- */
+//
+// Copyright (c) 2020 Matthew Penner
+//
+// This repository is licensed under the MIT License.
+// https://github.com/matthewpi/ctbans/blob/master/LICENSE.md
+//
 
 /**
  * Command_CTBan (sm_ctban)
+ *
  * Issues a ct ban to a client.
  */
 public Action Command_CTBan(const int client, const int args) {
@@ -15,9 +18,6 @@ public Action Command_CTBan(const int client, const int args) {
     if (args < 3) {
         // Send a message to the client.
         ReplyToCommand(client, "%s \x07Usage: \x01%s <#userid;target> <duration> <reason>", PREFIX, command);
-
-        // Log the command execution.
-        LogCommand(client, -1, command, "");
         return Plugin_Handled;
     }
 
@@ -28,8 +28,6 @@ public Action Command_CTBan(const int client, const int args) {
     // Attempt to get and target a player using the first command argument.
     int target = FindTarget(client, potentialTarget, true, true);
     if (target == -1) {
-        // Log the command execution.
-        LogCommand(client, -1, command, "(Targetting error)");
         return Plugin_Handled;
     }
 
@@ -44,15 +42,13 @@ public Action Command_CTBan(const int client, const int args) {
     int duration = StringToInt(durationString);
 
     // Check if duration is not a valid integer.
-    if (!StrEqual(durationString, "0") && duration == 0) {
+    if ((!StrEqual(durationString, "0") && duration == 0) || duration < 0) {
         // Send a message to the client.
-        ReplyToCommand(client, "%s \x10%s\x01 is not a valid ban duration.", PREFIX, durationString);
-
-        // Log the command execution.
-        LogCommand(client, -1, command, "(Invalid duration)");
+        ReplyToCommand(client, "%s \x10%s\x01 is an invalid duration.", PREFIX, durationString);
         return Plugin_Handled;
     }
 
+    // Get the ban reason.
     char reason[128] = "";
     for (int i = 3; i <= args; i++) {
         char buffer[64];
@@ -60,26 +56,21 @@ public Action Command_CTBan(const int client, const int args) {
         if (i != 3) {
             Format(buffer, sizeof(buffer), " %s", buffer);
         }
+
         StrCat(reason, sizeof(reason), buffer);
     }
 
     // Check if the target is invalid.
     if (!IsClientValid(target)) {
         // Send a message to the client.
-        ReplyToCommand(client, "%s \x10%N\x01 is not a valid player.", CONSOLE_PREFIX, target);
-
-        // Log the command execution.
-        LogCommand(client, -1, command, "(Invalid target)");
+        ReplyToCommand(client, "%s \x10%N\x01 is not a valid player.", PREFIX, target);
         return Plugin_Handled;
     }
 
     // Check if the target already has a ban.
     if (g_hBans[target] != null) {
         // Send a message to the client.
-        ReplyToCommand(client, "%s \x10%s\x01 already has an active \x07CT Ban\x01.", CONSOLE_PREFIX, targetName);
-
-        // Log the command execution.
-        LogCommand(client, -1, command, "(Target already has a ban)");
+        ReplyToCommand(client, "%s \x10%s\x01 already has an active \x07CT Ban\x01.", PREFIX, targetName);
         return Plugin_Handled;
     }
 
@@ -87,7 +78,7 @@ public Action Command_CTBan(const int client, const int args) {
     CTBans_AddBan(target, client, duration, reason);
 
     // Log the command execution.
-    LogCommand(client, target, command, "(Target: '%s')", targetName);
+    LogClientAction(client, target, "ctbanned", "(Duration: %s, Reason: \"%s\")", durationString, reason);
 
     return Plugin_Handled;
 }

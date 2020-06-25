@@ -1,11 +1,14 @@
-/**
- * Copyright (c) 2019 Matthew Penner <me@matthewp.io>
- * All rights reserved.
- */
+//
+// Copyright (c) 2020 Matthew Penner
+//
+// This repository is licensed under the MIT License.
+// https://github.com/matthewpi/ctbans/blob/master/LICENSE.md
+//
 
 /**
  * Command_CTBanOffline (sm_ctban_offline)
- * Issues a ct ban to a client.
+ *
+ * Issues a ct ban to a offline client.
  */
 public Action Command_CTBanOffline(const int client, const int args) {
     // Variable to hold the command name.
@@ -14,9 +17,6 @@ public Action Command_CTBanOffline(const int client, const int args) {
     // Check if there are no arguments passed.
     if (args == 0) {
         CTBans_RageMenu(client);
-
-        // Log the command execution.
-        LogCommand(client, -1, command, "");
         return Plugin_Handled;
     }
 
@@ -24,9 +24,6 @@ public Action Command_CTBanOffline(const int client, const int args) {
     if (args < 3) {
         // Send a message to the client.
         ReplyToCommand(client, "%s \x07Usage: \x01%s <steamId> <duration> <reason>", PREFIX, command);
-
-        // Log the command execution.
-        LogCommand(client, -1, command, "");
         return Plugin_Handled;
     }
 
@@ -41,15 +38,13 @@ public Action Command_CTBanOffline(const int client, const int args) {
     int duration = StringToInt(durationString);
 
     // Check if duration is not a valid integer.
-    if (!StrEqual(durationString, "0") && duration == 0) {
+    if ((!StrEqual(durationString, "0") && duration == 0) || duration < 0) {
         // Send a message to the client.
-        ReplyToCommand(client, "%s \x10%s\x01 is not a valid ban duration.", PREFIX, durationString);
-
-        // Log the command execution.
-        LogCommand(client, -1, command, "(Invalid duration)");
+        ReplyToCommand(client, "%s \x10%s\x01 is an invalid duration.", PREFIX, durationString);
         return Plugin_Handled;
     }
 
+    // Get the ban reason.
     char reason[128] = "";
     for (int i = 3; i <= args; i++) {
         char buffer[64];
@@ -95,7 +90,7 @@ public Action Command_CTBanOffline(const int client, const int args) {
     Backend_InsertBanObject(ban, 0);
 
     // Log the command execution.
-    LogCommand(client, -1, command, "(Target: '%s')", steamId);
+    LogClientAction(client, -1, "ctbanned an offline player.", "(Steam ID: \"%s\", Duration: %s, Reason: \"%s\")", steamId, durationString, reason);
 
     return Plugin_Handled;
 }

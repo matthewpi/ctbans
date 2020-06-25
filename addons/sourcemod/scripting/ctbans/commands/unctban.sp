@@ -1,11 +1,14 @@
-/**
- * Copyright (c) 2019 Matthew Penner <me@matthewp.io>
- * All rights reserved.
- */
+//
+// Copyright (c) 2020 Matthew Penner
+//
+// This repository is licensed under the MIT License.
+// https://github.com/matthewpi/ctbans/blob/master/LICENSE.md
+//
 
 /**
  * Command_UnCTBan (sm_unctban)
- * Revokes a CT Ban from a client.
+ *
+ * Revokes a CT Ban on a client.
  */
 public Action Command_UnCTBan(const int client, const int args) {
     // Variable to hold the command name.
@@ -15,9 +18,6 @@ public Action Command_UnCTBan(const int client, const int args) {
     if (args != 1) {
         // Send a message to the client.
         ReplyToCommand(client, "%s \x07Usage: \x01%s <#userid;target>", PREFIX, command);
-
-        // Log the command execution.
-        LogCommand(client, -1, command, "");
         return Plugin_Handled;
     }
 
@@ -28,8 +28,6 @@ public Action Command_UnCTBan(const int client, const int args) {
     // Attempt to get and target a player using the first command argument.
     int target = FindTarget(client, potentialTarget, true, true);
     if (target == -1) {
-        // Log the command execution.
-        LogCommand(client, -1, command, "(Targetting error)");
         return Plugin_Handled;
     }
 
@@ -40,20 +38,14 @@ public Action Command_UnCTBan(const int client, const int args) {
     // Check if the target is invalid.
     if (!IsClientValid(target)) {
         // Send a message to the client.
-        ReplyToCommand(client, "%s \x10%N\x01 is not a valid player.", CONSOLE_PREFIX, target);
-
-        // Log the command execution.
-        LogCommand(client, -1, command, "(Invalid target)");
+        ReplyToCommand(client, "%s \x10%N\x01 is not a valid player.", PREFIX, target);
         return Plugin_Handled;
     }
 
     // Check if the target already has a ban.
     if (g_hBans[target] == null) {
         // Send a message to the client.
-        ReplyToCommand(client, "%s \x10%s\x01 does not have a \x07CT Ban\x01.", CONSOLE_PREFIX, targetName);
-
-        // Log the command execution.
-        LogCommand(client, -1, command, "(Target does not have a ban)");
+        ReplyToCommand(client, "%s \x10%s\x01 does not have a \x07CT Ban\x01.", PREFIX, targetName);
         return Plugin_Handled;
     }
 
@@ -61,7 +53,8 @@ public Action Command_UnCTBan(const int client, const int args) {
     CTBans_RemoveBan(target, client);
 
     // Log the command execution.
-    LogCommand(client, target, command, "(Target: '%s')", targetName);
+    //LogCommand(client, target, command, "(Target: '%s')", targetName);
+    LogClientAction(client, target, "removed a ctban for", "");
 
     return Plugin_Handled;
 }
