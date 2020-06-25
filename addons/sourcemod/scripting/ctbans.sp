@@ -17,7 +17,7 @@
 // Definitions
 // CTBans
 #define CTBANS_AUTHOR  "Matthew \"MP\" Penner"
-#define CTBANS_VERSION "0.1.0"
+#define CTBANS_VERSION "0.1.1"
 
 // Prefixes
 #define PREFIX         "[\x06CT Bans\x01]"
